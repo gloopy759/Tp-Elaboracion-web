@@ -1,0 +1,2261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cinecks — El Mejor Cine</title>
+  <style>
+    /* ===================== RESET & BASE ===================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --yellow: #FFD600;
+      --yellow-dark: #E6C000;
+      --yellow-light: #FFF9C4;
+      --black: #0a0a0a;
+      --white: #FFFFFF;
+      --gray:  #1c1c1c;
+      --gray2: #252525;
+      --gray3: #3a3a3a;
+      --muted: #888;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===================== ANIMACIONES ===================== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-50px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(50px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 #FFD60066; }
+      50%       { box-shadow: 0 0 0 14px #FFD60000; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-10px); }
+    }
+    @keyframes glow {
+      0%, 100% { text-shadow: 0 0 10px #FFD60088, 0 0 20px #FFD60044; }
+      50%       { text-shadow: 0 0 20px #FFD600cc, 0 0 40px #FFD60088, 0 0 60px #FFD60044; }
+    }
+    @keyframes ticker {
+      0%   { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    @keyframes starPop {
+      0%   { opacity: 0; transform: scale(0) rotate(0deg); }
+      60%  { opacity: 1; transform: scale(1.3) rotate(180deg); }
+      100% { opacity: 1; transform: scale(1) rotate(360deg); }
+    }
+    @keyframes heroSlide {
+      0%   { opacity: 0; transform: translateY(60px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+    .delay-5 { transition-delay: 0.5s; }
+
+    /* ===================== PAGES ===================== */
+    .page { display: none; min-height: 100vh; flex-direction: column; }
+    .page.active { display: flex; animation: fadeIn 0.4s ease; }
+
+    /* ===================== TICKER ===================== */
+    .news-ticker {
+      background: var(--yellow);
+      color: var(--black);
+      height: 32px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+    .ticker-label {
+      background: var(--black);
+      color: var(--yellow);
+      font-weight: 900;
+      font-size: 0.75rem;
+      padding: 0 14px;
+      white-space: nowrap;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      letter-spacing: 1px;
+      flex-shrink: 0;
+    }
+    .ticker-wrap {
+      overflow: hidden;
+      flex: 1;
+      position: relative;
+    }
+    .ticker-text {
+      display: inline-block;
+      white-space: nowrap;
+      font-weight: 700;
+      font-size: 0.78rem;
+      animation: ticker 28s linear infinite;
+      padding-left: 60px;
+    }
+
+    /* ===================== NAVBAR ===================== */
+    nav {
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid var(--yellow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 36px;
+      height: 68px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      animation: fadeInDown 0.5s ease both;
+    }
+
+    .nav-logo {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--yellow);
+      letter-spacing: 3px;
+      cursor: pointer;
+      animation: glow 3s ease-in-out infinite;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      user-select: none;
+      transition: transform 0.2s;
+    }
+    .nav-logo:hover { transform: scale(1.05); }
+    .nav-logo .logo-black { color: var(--white); }
+
+    .nav-links { display: flex; gap: 8px; align-items: center; }
+
+    .nav-btn {
+      background: transparent;
+      border: 2px solid transparent;
+      color: var(--muted);
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .nav-btn:hover { color: var(--yellow); border-color: var(--yellow); }
+
+    .nav-btn-primary {
+      background: var(--yellow);
+      color: var(--black);
+      border: none;
+      padding: 8px 22px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.25s;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    .nav-btn-primary:hover {
+      background: var(--yellow-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px #FFD60055;
+    }
+
+    .nav-balance {
+      background: linear-gradient(135deg, #1a1500, #2a2000);
+      border: 1.5px solid var(--yellow);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.85rem;
+      color: var(--yellow);
+      font-weight: 800;
+      display: none;
+    }
+
+    .nav-username {
+      color: var(--yellow);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    /* ===================== HERO ===================== */
+    .hero {
+      background: linear-gradient(145deg, #120e00 0%, #0a0a0a 50%, #0a0e1a 100%);
+      border-bottom: 2px solid var(--yellow);
+      padding: 80px 36px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-stars {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .star-dot {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--yellow);
+      opacity: 0;
+      animation: starPop 0.6s ease forwards, float 4s ease-in-out infinite;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--yellow);
+      color: var(--black);
+      font-weight: 800;
+      font-size: 0.75rem;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      animation: fadeInDown 0.6s ease 0.1s both;
+    }
+
+    .hero h1 {
+      font-size: 5rem;
+      font-weight: 900;
+      color: var(--yellow);
+      letter-spacing: 6px;
+      animation: heroSlide 0.8s ease 0.2s both;
+      line-height: 1;
+      text-shadow: 0 4px 40px #FFD60066;
+    }
+
+    .hero h1 .logo-thin { color: var(--white); font-weight: 300; }
+
+    .hero-tagline {
+      font-size: 1.2rem;
+      color: var(--muted);
+      margin-top: 14px;
+      animation: fadeInUp 0.7s ease 0.4s both;
+      letter-spacing: 1px;
+    }
+
+    .hero-cta {
+      margin-top: 36px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.7s ease 0.6s both;
+    }
+
+    .btn-yellow {
+      background: var(--yellow);
+      color: var(--black);
+      border: none;
+      padding: 14px 36px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-yellow:hover {
+      background: var(--yellow-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px #FFD60055;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--yellow);
+      border: 2px solid var(--yellow);
+      padding: 12px 34px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-outline:hover {
+      background: var(--yellow);
+      color: var(--black);
+    }
+
+    /* ===================== STATS BAR ===================== */
+    .stats-bar {
+      background: var(--yellow);
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      padding: 16px 36px;
+      text-align: center;
+      border-right: 1px solid #c8a800;
+      flex: 1;
+      min-width: 120px;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num { font-size: 1.6rem; font-weight: 900; color: var(--black); }
+    .stat-label { font-size: 0.72rem; font-weight: 700; color: #333; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ===================== SECTION ===================== */
+    .section { padding: 56px 36px; }
+    .section-dark { background: #111; }
+
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--white);
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .section-title .accent { color: var(--yellow); }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, var(--yellow) 0%, transparent 100%);
+      border-radius: 2px;
+    }
+
+    /* ===================== MOVIE CARDS ===================== */
+    .most-watched-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 24px;
+    }
+
+    .movie-card {
+      background: var(--gray2);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease;
+      border: 2px solid transparent;
+      position: relative;
+    }
+    .movie-card:hover {
+      transform: translateY(-12px) scale(1.03);
+      box-shadow: 0 20px 50px #FFD60044;
+      border-color: var(--yellow);
+    }
+
+    .movie-poster-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2/3;
+      overflow: hidden;
+      background: #181818;
+    }
+
+    .movie-poster {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .movie-card:hover .movie-poster { transform: scale(1.08); }
+
+    .movie-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px 16px 16px;
+    }
+    .movie-card:hover .movie-overlay { opacity: 1; }
+
+    .overlay-btn {
+      background: var(--yellow);
+      color: var(--black);
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .overlay-btn:hover { background: var(--yellow-dark); }
+
+    .movie-card-body { padding: 14px; }
+    .movie-card-title { font-weight: 800; font-size: 1rem; color: var(--white); margin-bottom: 4px; }
+    .movie-card-genre { font-size: 0.78rem; color: var(--yellow); font-weight: 600; }
+    .movie-card-rating {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 7px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .star-icon { color: var(--yellow); font-size: 0.9rem; }
+
+    .rank-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--yellow);
+      color: var(--black);
+      font-weight: 900;
+      font-size: 0.8rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    /* ===================== UPCOMING MOVIES ===================== */
+    .upcoming-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .upcoming-card {
+      flex: 1;
+      min-width: 180px;
+      max-width: 240px;
+      background: var(--gray2);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid var(--gray3);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .upcoming-card:hover {
+      border-color: var(--yellow);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 30px #FFD60022;
+    }
+    .upcoming-poster {
+      width: 100%;
+      aspect-ratio: 2/3;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(60%);
+      transition: filter 0.4s ease;
+    }
+    .upcoming-card:hover .upcoming-poster { filter: grayscale(0%); }
+    .upcoming-label {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.85);
+      color: var(--yellow);
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--yellow);
+      letter-spacing: 1px;
+    }
+    .upcoming-body { padding: 12px; }
+    .upcoming-title { font-weight: 800; font-size: 0.9rem; margin-bottom: 4px; }
+    .upcoming-genre { font-size: 0.75rem; color: var(--yellow); font-weight: 600; }
+
+    /* ===================== FUNCIONES ===================== */
+    .funciones-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 16px;
+    }
+    .funcion-card {
+      background: var(--gray2);
+      border-radius: 12px;
+      padding: 20px;
+      border-left: 4px solid var(--yellow);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .funcion-card:hover { transform: translateX(6px) translateY(-3px); box-shadow: 0 8px 24px #FFD60022; }
+    .funcion-time { font-size: 1.5rem; font-weight: 900; color: var(--yellow); margin-bottom: 4px; }
+    .funcion-movie { font-weight: 800; font-size: 1rem; }
+    .funcion-sala { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+    .funcion-badge {
+      display: inline-block;
+      background: var(--yellow);
+      color: var(--black);
+      font-size: 0.68rem;
+      font-weight: 900;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-top: 10px;
+      letter-spacing: 1px;
+    }
+
+    /* ===================== ACTORES ===================== */
+    .actors-banner {
+      display: flex;
+      gap: 24px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .actor-card {
+      text-align: center;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+      cursor: default;
+    }
+    .actor-card:hover { transform: translateY(-8px); }
+    .actor-avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 3px solid var(--yellow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      margin: 0 auto 10px;
+      background: var(--gray2);
+      transition: all 0.3s;
+    }
+    .actor-card:hover .actor-avatar {
+      border-color: #fff;
+      box-shadow: 0 0 20px #FFD60088;
+    }
+    .actor-name { font-size: 0.85rem; font-weight: 800; }
+    .actor-role { font-size: 0.72rem; color: var(--yellow); margin-top: 2px; }
+
+    /* ===================== CATALOGO CON POSTERS ===================== */
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 24px;
+    }
+    .catalog-card {
+      background: var(--gray2);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s cubic-bezier(0.34,1.4,0.64,1);
+      position: relative;
+    }
+    .catalog-card:hover {
+      border-color: var(--yellow);
+      transform: translateY(-8px);
+      box-shadow: 0 16px 40px #FFD60033;
+    }
+    .catalog-poster-wrap {
+      width: 100%;
+      aspect-ratio: 2/3;
+      overflow: hidden;
+      background: #181818;
+      position: relative;
+    }
+    .catalog-poster {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .catalog-card:hover .catalog-poster { transform: scale(1.08); }
+    .catalog-poster-fallback {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      background: linear-gradient(145deg, #2a2a2a, #181818);
+    }
+    .catalog-info { padding: 14px; }
+    .catalog-title { font-weight: 800; font-size: 0.95rem; margin-bottom: 4px; min-height: 2.2em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .catalog-meta { color: var(--muted); font-size: 0.78rem; }
+    .catalog-genre { color: var(--yellow); font-size: 0.78rem; font-weight: 700; margin-top: 4px; }
+    .catalog-btn {
+      width: 100%;
+      margin-top: 12px;
+      background: var(--yellow);
+      color: var(--black);
+      border: none;
+      padding: 9px;
+      border-radius: 8px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: all 0.2s;
+    }
+    .catalog-btn:hover { background: var(--yellow-dark); transform: translateY(-1px); }
+
+    .pagination { display: flex; gap: 8px; justify-content: center; margin-top: 40px; flex-wrap: wrap; }
+    .page-btn {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      border: 2px solid var(--gray3);
+      background: var(--gray2);
+      color: var(--muted);
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.25s;
+      font-size: 0.95rem;
+    }
+    .page-btn:hover, .page-btn.active-page {
+      background: var(--yellow);
+      color: var(--black);
+      border-color: var(--yellow);
+      transform: scale(1.1);
+    }
+
+    /* ===================== CINES ===================== */
+    .cinemas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 26px;
+    }
+    .cinema-card {
+      background: var(--gray2);
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .cinema-card:hover {
+      border-color: var(--yellow);
+      transform: translateY(-8px);
+      box-shadow: 0 16px 40px #FFD60033;
+    }
+    .cinema-banner {
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      background: linear-gradient(135deg, #1a1500, #0a0a0a);
+      transition: transform 0.4s ease;
+    }
+    .cinema-card:hover .cinema-banner { transform: scale(1.05); }
+    .cinema-info { padding: 22px; }
+    .cinema-name { font-weight: 900; font-size: 1.15rem; margin-bottom: 6px; }
+    .cinema-address { color: var(--muted); font-size: 0.85rem; margin-bottom: 12px; }
+    .cinema-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .badge {
+      background: transparent;
+      color: var(--yellow);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1.5px solid var(--yellow);
+      letter-spacing: 0.5px;
+    }
+    .cinema-btn {
+      width: 100%;
+      background: var(--yellow);
+      color: var(--black);
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 900;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    .cinema-btn:hover { background: var(--yellow-dark); }
+
+    /* ===================== MAPA DE ASIENTOS ===================== */
+    .seat-layout { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .screen-label {
+      background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+      color: var(--black);
+      font-weight: 900;
+      padding: 8px 100px;
+      border-radius: 4px;
+      margin-bottom: 24px;
+      font-size: 0.82rem;
+      letter-spacing: 3px;
+    }
+    .seat-row { display: flex; gap: 8px; align-items: center; }
+    .seat-row-label { width: 24px; text-align: center; font-weight: 700; font-size: 0.75rem; color: var(--muted); }
+    .seat {
+      width: 36px; height: 32px;
+      border-radius: 6px 6px 2px 2px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+      font-size: 0.6rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: transparent;
+    }
+    .seat.available { background: var(--gray3); border-color: var(--gray3); }
+    .seat.available:hover {
+      background: var(--yellow-light);
+      border-color: var(--yellow);
+      color: var(--black);
+      transform: scale(1.2) translateY(-2px);
+    }
+    .seat.selected {
+      background: var(--yellow);
+      border-color: var(--yellow-dark);
+      color: var(--black);
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px #FFD60055;
+    }
+    .seat.taken { background: #2a2a2a; border-color: #222; cursor: not-allowed; opacity: 0.4; }
+
+    .seat-legend { display: flex; gap: 24px; margin-top: 24px; flex-wrap: wrap; justify-content: center; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--muted); }
+    .legend-box { width: 26px; height: 22px; border-radius: 5px; border: 2px solid; }
+    .legend-box.available { background: var(--gray3); border-color: var(--gray3); }
+    .legend-box.selected { background: var(--yellow); border-color: var(--yellow-dark); }
+    .legend-box.taken { background: #2a2a2a; border-color: #222; }
+
+    /* ===================== PASOS DE COMPRA ===================== */
+    .purchase-steps {
+      display: flex;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid var(--gray3);
+      margin-bottom: 36px;
+    }
+    .step-indicator {
+      flex: 1;
+      padding: 14px 10px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.82rem;
+      background: var(--gray2);
+      color: var(--muted);
+      border-right: 1px solid var(--gray3);
+    }
+    .step-indicator:last-child { border-right: none; }
+    .step-indicator.active-step { background: var(--yellow); color: var(--black); }
+    .step-indicator.done-step { background: var(--gray3); color: var(--yellow); }
+
+    /* ===================== FORMULARIOS ===================== */
+    .purchase-layout { display: flex; gap: 32px; flex-wrap: wrap; }
+    .purchase-form-wrap { flex: 2; min-width: 280px; }
+    .purchase-summary { flex: 1; min-width: 240px; }
+
+    .summary-box {
+      background: var(--gray2);
+      border-radius: 14px;
+      padding: 26px;
+      border: 2px solid var(--gray3);
+      position: sticky;
+      top: 90px;
+    }
+    .summary-title { font-weight: 900; font-size: 1.1rem; margin-bottom: 18px; color: var(--yellow); }
+    .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem; }
+    .summary-row.total {
+      border-top: 2px solid var(--gray3);
+      padding-top: 12px;
+      margin-top: 10px;
+      font-weight: 900;
+      font-size: 1.05rem;
+      color: var(--yellow);
+    }
+
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 7px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--gray2);
+      border: 2px solid var(--gray3);
+      border-radius: 10px;
+      color: var(--white);
+      padding: 13px 16px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .form-input:focus {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 3px #FFD60022;
+    }
+    .form-input::placeholder { color: var(--gray3); }
+    .form-row { display: flex; gap: 16px; }
+    .form-row .form-group { flex: 1; }
+
+    .btn-nav-row { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; }
+    .btn-back {
+      background: transparent;
+      color: var(--muted);
+      border: 2px solid var(--gray3);
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-back:hover { border-color: var(--white); color: var(--white); }
+    .btn-next {
+      background: var(--yellow);
+      color: var(--black);
+      border: none;
+      padding: 12px 32px;
+      border-radius: 10px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.25s;
+      font-size: 1rem;
+    }
+    .btn-next:hover { background: var(--yellow-dark); transform: translateY(-3px); box-shadow: 0 8px 24px #FFD60044; }
+
+    /* ===================== MODALES ===================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--gray);
+      border-radius: 20px;
+      padding: 44px;
+      max-width: 440px;
+      width: 100%;
+      border: 2px solid var(--yellow);
+      box-shadow: 0 30px 80px #FFD60022;
+      position: relative;
+      animation: scaleIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px; right: 20px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.6rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s, transform 0.2s;
+    }
+    .modal-close:hover { color: var(--yellow); transform: rotate(90deg); }
+
+    .modal-logo {
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--yellow);
+      margin-bottom: 6px;
+      letter-spacing: 3px;
+    }
+    .modal-subtitle { text-align: center; color: var(--muted); font-size: 0.88rem; margin-bottom: 28px; }
+
+    .modal-tabs {
+      display: flex;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid var(--gray3);
+      margin-bottom: 24px;
+    }
+    .modal-tab {
+      flex: 1;
+      padding: 11px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 0.88rem;
+      background: var(--gray);
+      color: var(--muted);
+      border: none;
+      transition: all 0.25s;
+    }
+    .modal-tab.active { background: var(--yellow); color: var(--black); }
+
+    .modal-form { display: flex; flex-direction: column; gap: 14px; }
+    .modal-input {
+      background: var(--gray2);
+      border: 2px solid var(--gray3);
+      border-radius: 10px;
+      color: var(--white);
+      padding: 13px 16px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      width: 100%;
+    }
+    .modal-input:focus { border-color: var(--yellow); box-shadow: 0 0 0 3px #FFD60022; }
+    .modal-input::placeholder { color: #555; }
+
+    .modal-submit {
+      background: var(--yellow);
+      color: var(--black);
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: 900;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.25s;
+      margin-top: 4px;
+    }
+    .modal-submit:hover { background: var(--yellow-dark); transform: translateY(-2px); }
+
+    .modal-error {
+      background: rgba(180,0,0,0.3);
+      border: 1.5px solid #ff5555;
+      color: #ffaaaa;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    /* Wallet modal */
+    .wallet-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+    .wallet-icon-big {
+      width: 58px; height: 58px;
+      background: var(--yellow);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.9rem;
+      flex-shrink: 0;
+    }
+    .wallet-title { font-size: 1.3rem; font-weight: 900; }
+
+    .wallet-balance-display {
+      background: var(--gray2);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      border: 1.5px solid var(--gray3);
+    }
+    .wallet-balance-label { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; }
+    .wallet-balance-amount { font-size: 2.4rem; font-weight: 900; color: var(--yellow); margin-top: 4px; }
+
+    .amount-presets { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .preset-btn {
+      flex: 1;
+      min-width: 70px;
+      background: var(--gray3);
+      color: var(--white);
+      border: 2px solid transparent;
+      padding: 10px 4px;
+      border-radius: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.25s;
+      font-size: 0.88rem;
+    }
+    .preset-btn:hover, .preset-btn.selected-preset {
+      background: var(--yellow);
+      color: var(--black);
+      border-color: var(--yellow-dark);
+      transform: scale(1.05);
+    }
+
+    .payment-method { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .payment-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--gray2);
+      border: 2px solid var(--gray3);
+      border-radius: 10px;
+      padding: 13px 16px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .payment-option:hover, .payment-option.selected-method { border-color: var(--yellow); background: #1a1500; }
+    .payment-radio { width: 18px; height: 18px; accent-color: var(--yellow); }
+    .payment-label { font-weight: 700; font-size: 0.9rem; }
+    .payment-icon { font-size: 1.4rem; margin-left: auto; }
+
+    /* Success modal */
+    .success-icon {
+      width: 76px; height: 76px;
+      background: var(--yellow);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      margin: 0 auto 20px;
+    }
+
+    /* ===================== PAGE HEADER ===================== */
+    .page-header {
+      background: linear-gradient(135deg, #150f00, var(--black));
+      border-bottom: 2px solid var(--yellow);
+      padding: 50px 36px 34px;
+    }
+    .page-header h1 {
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: var(--yellow);
+      margin-bottom: 8px;
+    }
+    .page-header p { color: var(--muted); }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .breadcrumb-link { cursor: pointer; transition: color 0.2s; }
+    .breadcrumb-link:hover { color: var(--yellow); }
+    .breadcrumb-sep { color: var(--gray3); }
+    .breadcrumb-current { color: var(--white); font-weight: 700; }
+
+    /* ===================== NOTIFICACIONES ===================== */
+    .notification {
+      position: fixed;
+      top: 90px;
+      right: 24px;
+      z-index: 9999;
+      background: var(--gray2);
+      border-left: 4px solid var(--yellow);
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      animation: slideInRight 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      max-width: 320px;
+    }
+    .notification.error { border-color: #ff5555; }
+    .notification.success { border-color: #55ff88; }
+
+    /* ===================== FOOTER ===================== */
+    footer {
+      background: #050505;
+      border-top: 2px solid #1a1a1a;
+      padding: 48px 36px 24px;
+      margin-top: auto;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 36px;
+      margin-bottom: 36px;
+    }
+    .footer-logo { font-size: 1.6rem; font-weight: 900; color: var(--yellow); letter-spacing: 2px; }
+    .footer-desc { color: var(--muted); font-size: 0.85rem; margin-top: 10px; line-height: 1.6; }
+    .footer-col-title { font-weight: 900; color: var(--white); margin-bottom: 14px; font-size: 0.9rem; letter-spacing: 1px; }
+    .footer-link {
+      display: block;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 9px;
+      cursor: pointer;
+      transition: color 0.2s;
+      text-decoration: none;
+    }
+    .footer-link:hover { color: var(--yellow); }
+    .footer-bottom {
+      border-top: 1px solid #1a1a1a;
+      padding-top: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    .footer-bottom span { color: var(--yellow); font-weight: 800; }
+
+    /* ===================== SCROLLBAR ===================== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--yellow); border-radius: 3px; }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 16px; }
+      .nav-links .nav-btn { display: none; }
+      .nav-links .nav-btn-primary { display: flex; }
+      .hero h1 { font-size: 3rem; }
+      .section { padding: 36px 16px; }
+      .page-header { padding: 32px 16px 24px; }
+      .modal { padding: 28px 20px; }
+      .purchase-layout { flex-direction: column; }
+      .form-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ==================== TICKER ==================== -->
+<div class="news-ticker">
+  <div class="ticker-label">🎬 CINECKS</div>
+  <div class="ticker-wrap">
+    <span class="ticker-text">
+      ★ Avatar: Fuego y Cenizas ya disponible en IMAX &nbsp;•&nbsp; 
+      ★ Nuevas funciones de Duna: Parte Dos todos los días &nbsp;•&nbsp; 
+      ★ Spider-Man: A Través del Spider-Verso — ¡Éxito en taquilla! &nbsp;•&nbsp; 
+      ★ Promoción 2×1 todos los martes &nbsp;•&nbsp; 
+      ★ Recargá tu saldo Cinecks y ahorrá en cada función &nbsp;•&nbsp; 
+      ★ El Señor de los Anillos: El Retorno del Rey — reestreno exclusivo en CINECKS &nbsp;•&nbsp;
+    </span>
+  </div>
+</div>
+
+<!-- ==================== NAVBAR ==================== -->
+<nav id="mainNav">
+  <div class="nav-logo" onclick="showPage('home')">
+    🎬 <span>CINE</span><span class="logo-black">CKS</span>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn" onclick="showPage('home')">Inicio</button>
+    <button class="nav-btn" onclick="showPage('catalog')">Películas</button>
+    <button class="nav-btn" onclick="showPage('cinemas')">Cines</button>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="nav-username" id="navUsername"></span>
+      <div class="nav-balance" id="navBalance">💰 $0</div>
+      <button class="nav-btn" id="walletBtn" onclick="openWallet()" style="color:var(--yellow);border-color:var(--yellow);">+ Cargar Saldo</button>
+      <button class="nav-btn-primary" id="loginNavBtn" onclick="openLoginModal()">Ingresar</button>
+      <button class="nav-btn" id="logoutBtn" style="display:none;" onclick="logout()">Salir</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ==================== PAGE: HOME ==================== -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-stars" id="heroStars"></div>
+    <div class="hero-badge">🎬 EL CINE MÁS GRANDE DE ARGENTINA</div>
+    <h1>CINE<span class="logo-thin">CKS</span></h1>
+    <div class="hero-tagline">Viví la experiencia. Sentí la emoción. Disfrutá el cine.</div>
+    <div class="hero-cta">
+      <button class="btn-yellow" onclick="showPage('catalog')">🎞️ Ver Películas</button>
+      <button class="btn-outline" onclick="showPage('cinemas')">📍 Nuestros Cines</button>
+    </div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num" data-count="6">0</div><div class="stat-label">Sucursales</div></div>
+    <div class="stat-item"><div class="stat-num" data-count="42">0</div><div class="stat-label">Películas</div></div>
+    <div class="stat-item"><div class="stat-num" data-count="98">0</div><div class="stat-label">% Satisfacción</div></div>
+    <div class="stat-item"><div class="stat-num" data-count="500000">0</div><div class="stat-label">Espectadores</div></div>
+  </div>
+
+  <!-- FUNCIONES DEL DÍA -->
+  <div class="section section-dark">
+    <div class="section-title reveal"><span class="accent">📅</span> Funciones de Hoy</div>
+    <div class="funciones-grid">
+      <div class="funcion-card reveal delay-1" onclick="startBooking('Avatar: Fuego y Cenizas','Sala 1')">
+        <div class="funcion-time">14:30</div>
+        <div class="funcion-movie">Avatar: Fuego y Cenizas</div>
+        <div class="funcion-sala">Sala 1 — IMAX 3D</div>
+        <div class="funcion-badge">3D IMAX</div>
+      </div>
+      <div class="funcion-card reveal delay-2" onclick="startBooking('El Señor de los Anillos: El Retorno del Rey','Sala 2')">
+        <div class="funcion-time">16:00</div>
+        <div class="funcion-movie">El Señor de los Anillos: El Retorno del Rey</div>
+        <div class="funcion-sala">Sala 2 — Premium</div>
+        <div class="funcion-badge">Premium</div>
+      </div>
+      <div class="funcion-card reveal delay-3" onclick="startBooking('Duna: Parte Dos','Sala 3')">
+        <div class="funcion-time">18:45</div>
+        <div class="funcion-movie">Duna: Parte Dos</div>
+        <div class="funcion-sala">Sala 3 — 4DX</div>
+        <div class="funcion-badge">4DX</div>
+      </div>
+      <div class="funcion-card reveal delay-4" onclick="startBooking('Spider-Man: A Través del Spider-Verso','Sala 4')">
+        <div class="funcion-time">20:15</div>
+        <div class="funcion-movie">Spider-Man: A Través del Spider-Verso</div>
+        <div class="funcion-sala">Sala 4 — 2D</div>
+        <div class="funcion-badge">2D</div>
+      </div>
+      <div class="funcion-card reveal delay-5" onclick="startBooking('Oppenheimer','Sala 5')">
+        <div class="funcion-time">21:30</div>
+        <div class="funcion-movie">Oppenheimer</div>
+        <div class="funcion-sala">Sala 5 — IMAX</div>
+        <div class="funcion-badge">IMAX</div>
+      </div>
+      <div class="funcion-card reveal delay-5" onclick="startBooking('Interestelar','Sala 1')">
+        <div class="funcion-time">23:00</div>
+        <div class="funcion-movie">Interestelar</div>
+        <div class="funcion-sala">Sala 1 — IMAX</div>
+        <div class="funcion-badge">IMAX</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PELÍCULAS MÁS VISTAS -->
+  <div class="section">
+    <div class="section-title reveal"><span class="accent">🔥</span> Películas Más Vistas</div>
+    <div class="most-watched-row" id="mostWatchedRow">
+
+      <!-- Card 1 -->
+      <div class="movie-card reveal delay-1" onclick="startBooking('Avatar: Fuego y Cenizas','Sala 1 IMAX')">
+        <div class="rank-badge">#1</div>
+        <div class="movie-poster-wrap">
+          <img class="movie-poster"
+               src="https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+               alt="Avatar: Fuego y Cenizas" />
+          <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:5rem;background:#102030;">🌊</div>
+        </div>
+        <div class="movie-overlay">
+          <button class="overlay-btn" onclick="event.stopPropagation();startBooking('Avatar: Fuego y Cenizas','Sala 1 IMAX')">🎟️ Comprar Entrada</button>
+        </div>
+        <div class="movie-card-body">
+          <div class="movie-card-title">Avatar: Fuego y Cenizas</div>
+          <div class="movie-card-genre">Ciencia Ficción · IMAX</div>
+          <div class="movie-card-rating"><span class="star-icon">★</span> 9.1 · 2026</div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="movie-card reveal delay-2" onclick="startBooking('Spider-Man: A Través del Spider-Verso','Sala 4')">
+        <div class="rank-badge">#2</div>
+        <div class="movie-poster-wrap">
+          <img class="movie-poster"
+               src="https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+               alt="Spider-Man: A Través del Spider-Verso" />
+          <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:5rem;background:#201020;">🕷️</div>
+        </div>
+        <div class="movie-overlay">
+          <button class="overlay-btn" onclick="event.stopPropagation();startBooking('Spider-Man: A Través del Spider-Verso','Sala 4')">🎟️ Comprar Entrada</button>
+        </div>
+        <div class="movie-card-body">
+          <div class="movie-card-title">Spider-Man: A Través del Spider-Verso</div>
+          <div class="movie-card-genre">Acción · Superhéroes</div>
+          <div class="movie-card-rating"><span class="star-icon">★</span> 8.7 · 2026</div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="movie-card reveal delay-3" onclick="startBooking('Duna: Parte Dos','Sala 3')">
+        <div class="rank-badge">#3</div>
+        <div class="movie-poster-wrap">
+          <img class="movie-poster"
+               src="https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+               alt="Duna: Parte Dos" />
+          <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:5rem;background:#302010;">🏜️</div>
+        </div>
+        <div class="movie-overlay">
+          <button class="overlay-btn" onclick="event.stopPropagation();startBooking('Duna: Parte Dos','Sala 3')">🎟️ Comprar Entrada</button>
+        </div>
+        <div class="movie-card-body">
+          <div class="movie-card-title">Duna: Parte Dos</div>
+          <div class="movie-card-genre">Ciencia Ficción · 4DX</div>
+          <div class="movie-card-rating"><span class="star-icon">★</span> 9.0 · 2026</div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="movie-card reveal delay-4" onclick="startBooking('Oppenheimer','Sala 5')">
+        <div class="rank-badge">#4</div>
+        <div class="movie-poster-wrap">
+          <img class="movie-poster"
+               src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+               alt="Oppenheimer" />
+          <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:5rem;background:#201010;">💣</div>
+        </div>
+        <div class="movie-overlay">
+          <button class="overlay-btn" onclick="event.stopPropagation();startBooking('Oppenheimer','Sala 5')">🎟️ Comprar Entrada</button>
+        </div>
+        <div class="movie-card-body">
+          <div class="movie-card-title">Oppenheimer</div>
+          <div class="movie-card-genre">Drama Histórico</div>
+          <div class="movie-card-rating"><span class="star-icon">★</span> 8.9 · 2026</div>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="movie-card reveal delay-5" onclick="startBooking('Interestelar','Sala 1')">
+        <div class="rank-badge">#5</div>
+        <div class="movie-poster-wrap">
+          <img class="movie-poster"
+               src="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+               alt="Interestelar" />
+          <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:5rem;background:#101020;">🚀</div>
+        </div>
+        <div class="movie-overlay">
+          <button class="overlay-btn" onclick="event.stopPropagation();startBooking('Interestelar','Sala 1')">🎟️ Comprar Entrada</button>
+        </div>
+        <div class="movie-card-body">
+          <div class="movie-card-title">Interestelar</div>
+          <div class="movie-card-genre">Ciencia Ficción · IMAX</div>
+          <div class="movie-card-rating"><span class="star-icon">★</span> 9.2 · 2026</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PRÓXIMAS PELÍCULAS -->
+  <div class="section section-dark">
+    <div class="section-title reveal"><span class="accent">🎭</span> Próximas Películas</div>
+    <div class="upcoming-row">
+
+      <div class="upcoming-card reveal delay-1">
+        <span class="upcoming-label">PRONTO</span>
+        <img class="upcoming-poster"
+             src="https://image.tmdb.org/t/p/w500/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg"
+             onerror="this.style.display='none';"
+             alt="El Señor de los Anillos: El Retorno del Rey" />
+        <div class="upcoming-body">
+          <div class="upcoming-title">El Señor de los Anillos: El Retorno del Rey</div>
+          <div class="upcoming-genre">Fantasía Épica</div>
+        </div>
+      </div>
+
+      <div class="upcoming-card reveal delay-2">
+        <span class="upcoming-label">PRONTO</span>
+        <img class="upcoming-poster"
+             src="https://image.tmdb.org/t/p/w500/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg"
+             onerror="this.style.display='none';"
+             alt="Terminator: Destino Oculto" />
+        <div class="upcoming-body">
+          <div class="upcoming-title">Terminator: Destino Oculto</div>
+          <div class="upcoming-genre">Acción · Sci-Fi</div>
+        </div>
+      </div>
+
+      <div class="upcoming-card reveal delay-3">
+        <span class="upcoming-label">PRONTO</span>
+        <img class="upcoming-poster"
+             src="https://image.tmdb.org/t/p/w500/bQXAqRx2Fgc46uCVWgoPz5L5Dtr.jpg"
+             onerror="this.style.display='none';"
+             alt="Thor: Amor y Trueno" />
+        <div class="upcoming-body">
+          <div class="upcoming-title">Thor: Amor y Trueno</div>
+          <div class="upcoming-genre">Superhéroes</div>
+        </div>
+      </div>
+
+      <div class="upcoming-card reveal delay-4">
+        <span class="upcoming-label">PRONTO</span>
+        <img class="upcoming-poster"
+             src="https://image.tmdb.org/t/p/w500/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg"
+             onerror="this.style.display='none';"
+             alt="El Conjuro: El Diablo me Obligó a Hacerlo" />
+        <div class="upcoming-body">
+          <div class="upcoming-title">El Conjuro: El Diablo me Obligó a Hacerlo</div>
+          <div class="upcoming-genre">Terror</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ACTORES -->
+  <div class="section">
+    <div class="section-title reveal"><span class="accent">⭐</span> Actores de Nuestra Empresa</div>
+    <div class="actors-banner reveal">
+      <div class="actor-card"><div class="actor-avatar">👨‍🎤</div><div class="actor-name">Carlos M.</div><div class="actor-role">Actor Principal</div></div>
+      <div class="actor-card"><div class="actor-avatar">👩‍🎤</div><div class="actor-name">Laura P.</div><div class="actor-role">Actriz</div></div>
+      <div class="actor-card"><div class="actor-avatar">🧔</div><div class="actor-name">Roberto G.</div><div class="actor-role">Director</div></div>
+      <div class="actor-card"><div class="actor-avatar">👩</div><div class="actor-name">Sofía R.</div><div class="actor-role">Actriz</div></div>
+      <div class="actor-card"><div class="actor-avatar">👨</div><div class="actor-name">Miguel A.</div><div class="actor-role">Actor</div></div>
+      <div class="actor-card"><div class="actor-avatar">👩‍💼</div><div class="actor-name">Ana V.</div><div class="actor-role">Productora</div></div>
+      <div class="actor-card"><div class="actor-avatar">🧑</div><div class="actor-name">Diego F.</div><div class="actor-role">Actor</div></div>
+      <div class="actor-card"><div class="actor-avatar">👩‍🦰</div><div class="actor-name">Valentina H.</div><div class="actor-role">Actriz</div></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">🎬 CINECKS</div>
+        <div class="footer-desc">El mejor cine de Argentina.<br>Calidad, comodidad y emoción en cada función.</div>
+      </div>
+      <div>
+        <div class="footer-col-title">NAVEGACIÓN</div>
+        <a class="footer-link" onclick="showPage('home')">Inicio</a>
+        <a class="footer-link" onclick="showPage('catalog')">Catálogo</a>
+        <a class="footer-link" onclick="showPage('cinemas')">Nuestros Cines</a>
+      </div>
+      <div>
+        <div class="footer-col-title">CUENTA</div>
+        <a class="footer-link" onclick="openLoginModal()">Iniciar Sesión</a>
+        <a class="footer-link" onclick="openLoginModal()">Registrarse</a>
+        <a class="footer-link" onclick="openWallet()">Cargar Saldo</a>
+      </div>
+      <div>
+        <div class="footer-col-title">CONTACTO</div>
+        <a class="footer-link">📧 info@cinecks.ar</a>
+        <a class="footer-link">📞 0800-CINECKS</a>
+        <a class="footer-link">📍 Buenos Aires, Argentina</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 <span>CINECKS</span>. Todos los derechos reservados.</div>
+      <div>Hecho con ❤️ en Argentina</div>
+    </div>
+  </footer>
+</div>
+
+<!-- ==================== PAGE: CATALOG ==================== -->
+<div class="page" id="page-catalog">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span class="breadcrumb-link" onclick="showPage('home')">Inicio</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Catálogo de Películas</span>
+    </div>
+    <h1>Catálogo de Películas</h1>
+    <p>Explorá todas nuestras películas disponibles — Todas con póster y en español</p>
+  </div>
+
+  <div class="section">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px;align-items:center;">
+      <span style="color:var(--muted);font-size:0.8rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;">Género:</span>
+      <button class="page-btn active-page" style="width:auto;padding:0 18px;height:38px;">Todos</button>
+      <button class="page-btn" style="width:auto;padding:0 18px;height:38px;">Acción</button>
+      <button class="page-btn" style="width:auto;padding:0 18px;height:38px;">Drama</button>
+      <button class="page-btn" style="width:auto;padding:0 18px;height:38px;">Terror</button>
+      <button class="page-btn" style="width:auto;padding:0 18px;height:38px;">Ciencia Ficción</button>
+    </div>
+    <div class="catalog-grid" id="catalogGrid"></div>
+    <div class="pagination" id="catalogPagination"></div>
+  </div>
+
+  <footer>
+    <div class="footer-bottom" style="justify-content:center;">
+      <div>© 2026 <span>CINECKS</span>. Todos los derechos reservados.</div>
+    </div>
+  </footer>
+</div>
+
+<!-- ==================== PAGE: CINEMAS ==================== -->
+<div class="page" id="page-cinemas">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span class="breadcrumb-link" onclick="showPage('home')">Inicio</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Nuestros Cines</span>
+    </div>
+    <h1>Nuestros Cines a Elegir</h1>
+    <p>Elegí la sucursal más cercana a vos</p>
+  </div>
+  <div class="section">
+    <div class="cinemas-grid">
+      <div class="cinema-card" onclick="startBooking('Avatar: Fuego y Cenizas','Palermo')">
+        <div class="cinema-banner">🏙️</div>
+        <div class="cinema-info">
+          <div class="cinema-name">Cinecks Palermo</div>
+          <div class="cinema-address">📍 Av. Santa Fe 3450, Palermo, CABA</div>
+          <div class="cinema-badges"><span class="badge">IMAX</span><span class="badge">4DX</span><span class="badge">Premium</span></div>
+          <button class="cinema-btn">Seleccionar Cine</button>
+        </div>
+      </div>
+      <div class="cinema-card" onclick="startBooking('Avatar: Fuego y Cenizas','Recoleta')">
+        <div class="cinema-banner">🌆</div>
+        <div class="cinema-info">
+          <div class="cinema-name">Cinecks Recoleta</div>
+          <div class="cinema-address">📍 Av. Pueyrredón 1200, Recoleta, CABA</div>
+          <div class="cinema-badges"><span class="badge">3D</span><span class="badge">Premium</span></div>
+          <button class="cinema-btn">Seleccionar Cine</button>
+        </div>
+      </div>
+      <div class="cinema-card" onclick="startBooking('Avatar: Fuego y Cenizas','Belgrano')">
+        <div class="cinema-banner">🏘️</div>
+        <div class="cinema-info">
+          <div class="cinema-name">Cinecks Belgrano</div>
+          <div class="cinema-address">📍 Av. Cabildo 2500, Belgrano, CABA</div>
+          <div class="cinema-badges"><span class="badge">IMAX</span><span class="badge">2D</span><span class="badge">3D</span></div>
+          <button class="cinema-btn">Seleccionar Cine</button>
+        </div>
+      </div>
+      <div class="cinema-card" onclick="startBooking('Avatar: Fuego y Cenizas','Caballito')">
+        <div class="cinema-banner">🎠</div>
+        <div class="cinema-info">
+          <div class="cinema-name">Cinecks Caballito</div>
+          <div class="cinema-address">📍 Rivadavia 5000, Caballito, CABA</div>
+          <div class="cinema-badges"><span class="badge">2D</span><span class="badge">3D</span></div>
+          <button class="cinema-btn">Seleccionar Cine</button>
+        </div>
+      </div>
+      <div class="cinema-card" onclick="startBooking('Avatar: Fuego y Cenizas','La Plata')">
+        <div class="cinema-banner">🏛️</div>
+        <div class="cinema-info">
+          <div class="cinema-name">Cinecks La Plata</div>
+          <div class="cinema-address">📍 Calle 7 Nº 740, La Plata, PBA</div>
+          <div class="cinema-badges"><span class="badge">IMAX</span><span class="badge">4DX</span></div>
+          <button class="cinema-btn">Seleccionar Cine</button>
+        </div>
+      </div>
+      <div class="cinema-card" onclick="startBooking('Avatar: Fuego y Cenizas','Córdoba')">
+        <div class="cinema-banner">🌄</div>
+        <div class="cinema-info">
+          <div class="cinema-name">Cinecks Córdoba</div>
+          <div class="cinema-address">📍 Av. Colón 450, Córdoba Capital</div>
+          <div class="cinema-badges"><span class="badge">Premium</span><span class="badge">3D</span></div>
+          <button class="cinema-btn">Seleccionar Cine</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-bottom" style="justify-content:center;">
+      <div>© 2026 <span>CINECKS</span>. Todos los derechos reservados.</div>
+    </div>
+  </footer>
+</div>
+
+<!-- ==================== PAGE: SEATS ==================== -->
+<div class="page" id="page-seats">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span class="breadcrumb-link" onclick="showPage('home')">Inicio</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-link" onclick="showPage('catalog')">Películas</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Elegir Asiento</span>
+    </div>
+    <h1>Elija su Asiento</h1>
+    <p id="seatsMovieLabel">Seleccioná tus asientos para la función</p>
+  </div>
+  <div style="padding:0 36px;margin-top:28px;">
+    <div class="purchase-steps">
+      <div class="step-indicator done-step">✓ Película</div>
+      <div class="step-indicator active-step">2. Asiento</div>
+      <div class="step-indicator">3. Datos</div>
+      <div class="step-indicator">4. Pago</div>
+    </div>
+  </div>
+  <div class="section" style="display:flex;flex-direction:column;align-items:center;">
+    <div class="screen-label">🎬 PANTALLA</div>
+    <div class="seat-layout" id="seatLayout"></div>
+    <div class="seat-legend">
+      <div class="legend-item"><div class="legend-box available"></div> Disponible</div>
+      <div class="legend-item"><div class="legend-box selected"></div> Seleccionado</div>
+      <div class="legend-item"><div class="legend-box taken"></div> Ocupado</div>
+    </div>
+    <div style="margin-top:16px;color:var(--muted);font-size:0.9rem;" id="selectedSeatsLabel">Ningún asiento seleccionado</div>
+  </div>
+  <div style="padding:0 36px 48px;">
+    <div class="btn-nav-row">
+      <button class="btn-back" onclick="showPage('catalog')">← Volver</button>
+      <button class="btn-next" onclick="goToPurchase()">Siguiente → Datos de Compra</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: PURCHASE ==================== -->
+<div class="page" id="page-purchase">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span class="breadcrumb-link" onclick="showPage('home')">Inicio</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-link" onclick="showPage('seats')">Asientos</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Datos de Compra</span>
+    </div>
+    <h1>Datos de la Compra</h1>
+    <p>Completá tus datos para confirmar tu entrada</p>
+  </div>
+  <div style="padding:0 36px;margin-top:28px;">
+    <div class="purchase-steps">
+      <div class="step-indicator done-step">✓ Película</div>
+      <div class="step-indicator done-step">✓ Asiento</div>
+      <div class="step-indicator active-step">3. Datos</div>
+      <div class="step-indicator">4. Pago</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="purchase-layout">
+      <div class="purchase-form-wrap">
+        <div style="font-size:1.1rem;font-weight:900;margin-bottom:24px;color:var(--yellow);">📋 Información Personal</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nombre</label>
+            <input class="form-input" type="text" placeholder="Ej: Juan" id="purchaseName" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Apellido</label>
+            <input class="form-input" type="text" placeholder="Ej: García" id="purchaseLastName" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" placeholder="tu@email.com" id="purchaseEmail" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Teléfono</label>
+          <input class="form-input" type="tel" placeholder="+54 9 11 1234-5678" id="purchasePhone" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">DNI</label>
+          <input class="form-input" type="text" placeholder="12.345.678" id="purchaseDNI" />
+        </div>
+        <div class="btn-nav-row">
+          <button class="btn-back" onclick="showPage('seats')">← Volver</button>
+          <button class="btn-next" onclick="goToPayment()">Siguiente → Pago</button>
+        </div>
+      </div>
+      <div class="purchase-summary">
+        <div class="summary-box">
+          <div class="summary-title">🎟️ Resumen de Compra</div>
+          <div class="summary-row"><span style="color:var(--muted);">Película:</span><span id="summaryMovie">—</span></div>
+          <div class="summary-row"><span style="color:var(--muted);">Sala:</span><span id="summarySala">—</span></div>
+          <div class="summary-row"><span style="color:var(--muted);">Asientos:</span><span id="summarySeats">—</span></div>
+          <div class="summary-row"><span style="color:var(--muted);">Función:</span><span id="summaryTime">—</span></div>
+          <div class="summary-row"><span style="color:var(--muted);">Precio por entrada:</span><span>$2.500</span></div>
+          <div class="summary-row total"><span>Total:</span><span id="summaryTotal">$0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: PAYMENT ==================== -->
+<div class="page" id="page-payment">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span class="breadcrumb-link" onclick="showPage('home')">Inicio</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-link" onclick="showPage('purchase')">Datos</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Pago</span>
+    </div>
+    <h1>Confirmar Pago</h1>
+    <p>Elegí tu método de pago y confirmá la compra</p>
+  </div>
+  <div style="padding:0 36px;margin-top:28px;">
+    <div class="purchase-steps">
+      <div class="step-indicator done-step">✓ Película</div>
+      <div class="step-indicator done-step">✓ Asiento</div>
+      <div class="step-indicator done-step">✓ Datos</div>
+      <div class="step-indicator active-step">4. Pago</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="purchase-layout">
+      <div class="purchase-form-wrap">
+        <div style="font-size:1.1rem;font-weight:900;margin-bottom:24px;color:var(--yellow);">💳 Método de Pago</div>
+        <div id="walletPaymentOption" style="background:#1a1500;border:2px solid var(--yellow);border-radius:12px;padding:18px;margin-bottom:20px;display:none;animation:fadeIn 0.4s ease;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:1.5rem;">💰</span>
+            <div>
+              <div style="font-weight:900;color:var(--yellow);">Saldo Cinecks</div>
+              <div style="font-size:0.85rem;color:var(--muted);">Disponible: <span id="walletPayBalance" style="color:var(--yellow);font-weight:800;">$0</span></div>
+            </div>
+            <input type="radio" name="payMethod" value="wallet" class="payment-radio" style="margin-left:auto;" />
+          </div>
+        </div>
+        <div style="font-weight:800;color:var(--muted);font-size:0.8rem;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;">Tarjeta de Crédito / Débito</div>
+        <div class="form-group">
+          <label class="form-label">Número de Tarjeta</label>
+          <input class="form-input" type="text" placeholder="1234 5678 9012 3456" maxlength="19"
+            oninput="this.value=this.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim()" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Vencimiento</label>
+            <input class="form-input" type="text" placeholder="MM/AA" maxlength="5" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">CVV</label>
+            <input class="form-input" type="text" placeholder="123" maxlength="3" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nombre en la Tarjeta</label>
+          <input class="form-input" type="text" placeholder="Como aparece en la tarjeta" />
+        </div>
+        <div class="btn-nav-row">
+          <button class="btn-back" onclick="showPage('purchase')">← Volver</button>
+          <button class="btn-next" onclick="confirmPurchase()" style="background:#22cc55;">✅ Confirmar Compra</button>
+        </div>
+      </div>
+      <div class="purchase-summary">
+        <div class="summary-box">
+          <div class="summary-title">🎟️ Resumen Final</div>
+          <div class="summary-row"><span style="color:var(--muted);">Película:</span><span id="paymentMovie">—</span></div>
+          <div class="summary-row"><span style="color:var(--muted);">Asientos:</span><span id="paymentSeats">—</span></div>
+          <div class="summary-row total"><span>Total a pagar:</span><span id="paymentTotal">$0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: LOGIN ==================== -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeLoginModal()">×</button>
+    <div class="modal-logo">🎬 CINECKS</div>
+    <div class="modal-subtitle">Accedé a tu cuenta para disfrutar de todos los beneficios</div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tabLogin" onclick="switchTab('login')">Iniciar Sesión</button>
+      <button class="modal-tab" id="tabRegister" onclick="switchTab('register')">Registrarse</button>
+    </div>
+    <div id="loginForm">
+      <div class="modal-error" id="loginError">Usuario o contraseña incorrectos.</div>
+      <div class="modal-form">
+        <input class="modal-input" type="email" id="loginEmail" placeholder="📧 Email" autocomplete="off" />
+        <input class="modal-input" type="password" id="loginPassword" placeholder="🔒 Contraseña" />
+        <button class="modal-submit" onclick="doLogin()">Iniciar Sesión</button>
+        <div style="text-align:center;color:var(--muted);font-size:0.8rem;margin-top:4px;">
+          ¿No tenés cuenta? <span style="color:var(--yellow);cursor:pointer;font-weight:800;" onclick="switchTab('register')">Registrate gratis</span>
+        </div>
+      </div>
+    </div>
+    <div id="registerForm" style="display:none;">
+      <div class="modal-error" id="registerError">Por favor completá todos los campos.</div>
+      <div class="modal-form">
+        <div style="display:flex;gap:10px;">
+          <input class="modal-input" type="text" id="regName" placeholder="👤 Nombre" style="flex:1;" />
+          <input class="modal-input" type="text" id="regLastName" placeholder="👤 Apellido" style="flex:1;" />
+        </div>
+        <input class="modal-input" type="email" id="regEmail" placeholder="📧 Email" autocomplete="off" />
+        <input class="modal-input" type="password" id="regPassword" placeholder="🔒 Contraseña" />
+        <input class="modal-input" type="password" id="regPassword2" placeholder="🔒 Repetir Contraseña" />
+        <button class="modal-submit" onclick="doRegister()">Crear Cuenta</button>
+        <div style="text-align:center;color:var(--muted);font-size:0.8rem;margin-top:4px;">
+          ¿Ya tenés cuenta? <span style="color:var(--yellow);cursor:pointer;font-weight:800;" onclick="switchTab('login')">Iniciá sesión</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: WALLET ==================== -->
+<div class="modal-overlay" id="walletModal">
+  <div class="modal" style="max-width:490px;">
+    <button class="modal-close" onclick="closeWalletModal()">×</button>
+    <div class="wallet-header">
+      <div class="wallet-icon-big">💰</div>
+      <div>
+        <div class="wallet-title">Cargar Saldo</div>
+        <div style="color:var(--muted);font-size:0.85rem;">Recargá tu billetera Cinecks</div>
+      </div>
+    </div>
+    <div class="wallet-balance-display">
+      <div class="wallet-balance-label">Saldo Actual</div>
+      <div class="wallet-balance-amount" id="walletCurrentBalance">$0</div>
+    </div>
+    <div style="font-weight:800;font-size:0.8rem;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">Seleccioná el monto</div>
+    <div class="amount-presets">
+      <button class="preset-btn" onclick="setPreset(500)">$500</button>
+      <button class="preset-btn" onclick="setPreset(1000)">$1.000</button>
+      <button class="preset-btn" onclick="setPreset(2000)">$2.000</button>
+      <button class="preset-btn" onclick="setPreset(5000)">$5.000</button>
+      <button class="preset-btn" onclick="setPreset(10000)">$10.000</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">O ingresá un monto personalizado</label>
+      <input class="form-input" type="number" id="customAmount" placeholder="Ej: 3500" min="100" max="100000" oninput="clearPresets()" />
+    </div>
+    <div style="font-weight:800;font-size:0.8rem;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">Método de Pago</div>
+    <div class="payment-method">
+      <div class="payment-option selected-method" onclick="selectPayMethod(this,'card')">
+        <input type="radio" name="walletPay" class="payment-radio" checked />
+        <span class="payment-label">Tarjeta de Crédito / Débito</span>
+        <span class="payment-icon">💳</span>
+      </div>
+      <div class="payment-option" onclick="selectPayMethod(this,'transfer')">
+        <input type="radio" name="walletPay" class="payment-radio" />
+        <span class="payment-label">Transferencia Bancaria</span>
+        <span class="payment-icon">🏦</span>
+      </div>
+      <div class="payment-option" onclick="selectPayMethod(this,'mp')">
+        <input type="radio" name="walletPay" class="payment-radio" />
+        <span class="payment-label">MercadoPago</span>
+        <span class="payment-icon">💙</span>
+      </div>
+    </div>
+    <div id="walletCardFields">
+      <div class="form-group">
+        <label class="form-label">Número de Tarjeta</label>
+        <input class="form-input" type="text" id="walletCardNumber" placeholder="1234 5678 9012 3456" maxlength="19"
+          oninput="this.value=this.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim()" />
+      </div>
+      <div style="display:flex;gap:12px;">
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">Vencimiento</label>
+          <input class="form-input" type="text" placeholder="MM/AA" maxlength="5" />
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">CVV</label>
+          <input class="form-input" type="text" placeholder="123" maxlength="3" />
+        </div>
+      </div>
+    </div>
+    <button class="modal-submit" style="margin-top:10px;" onclick="confirmWalletLoad()">💰 Cargar Saldo</button>
+  </div>
+</div>
+
+<!-- ==================== MODAL: SUCCESS ==================== -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal" style="max-width:380px;text-align:center;">
+    <div class="success-icon">✅</div>
+    <h2 id="successTitle" style="color:var(--yellow);font-size:1.6rem;margin-bottom:10px;">¡Listo!</h2>
+    <p id="successMsg" style="color:var(--muted);">Operación completada con éxito.</p>
+    <button class="modal-submit" style="margin-top:28px;" onclick="closeSuccessModal()">Aceptar</button>
+  </div>
+</div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+  /* ======= STATE ======= */
+  let currentUser = null;
+  let userBalance = 0;
+  let selectedMovie = '';
+  let selectedSala  = '';
+  let selectedSeats = [];
+  let loginCallback = null;
+  let selectedPreset = 0;
+  let users = { 'demo@cinecks.ar': { password:'1234', name:'Demo', lastName:'Usuario', balance:5000 } };
+
+  /* ======= MOVIES DATA (42 PELÍCULAS CON POSTERS REALES Y NOMBRES EN ESPAÑOL) ======= */
+  const allMovies = [
+    { title:'Avatar: Fuego y Cenizas', poster:'https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg', emoji:'🌊', genre:'Ciencia Ficción', year:2026, rating:9.1 },
+    { title:'Spider-Man: A Través del Spider-Verso', poster:'https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg', emoji:'🕷️', genre:'Acción', year:2026, rating:8.7 },
+    { title:'Duna: Parte Dos', poster:'https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg', emoji:'🏜️', genre:'Ciencia Ficción', year:2026, rating:9.0 },
+    { title:'Oppenheimer', poster:'https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', emoji:'💣', genre:'Drama', year:2026, rating:8.9 },
+    { title:'El Señor de los Anillos: El Retorno del Rey', poster:'https://image.tmdb.org/t/p/w500/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg', emoji:'⚔️', genre:'Fantasía', year:2026, rating:9.4 },
+    { title:'Terminator: Destino Oculto', poster:'https://image.tmdb.org/t/p/w500/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg', emoji:'🤖', genre:'Acción', year:2026, rating:7.8 },
+    { title:'Thor: Amor y Trueno', poster:'https://image.tmdb.org/t/p/w500/bQXAqRx2Fgc46uCVWgoPz5L5Dtr.jpg', emoji:'🦸', genre:'Acción', year:2026, rating:8.2 },
+    { title:'El Conjuro: El Diablo me Obligó a Hacerlo', poster:'https://image.tmdb.org/t/p/w500/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg', emoji:'👻', genre:'Terror', year:2026, rating:7.5 },
+    { title:'Interestelar', poster:'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', emoji:'🚀', genre:'Ciencia Ficción', year:2026, rating:9.2 },
+    { title:'La Sirenita', poster:'https://image.tmdb.org/t/p/w500/ym1dxyOk4jFcSl4Q2zmRrA5BEEN.jpg', emoji:'🧜', genre:'Animación', year:2026, rating:7.9 },
+    { title:'Guasón: Folie à Deux', poster:'https://image.tmdb.org/t/p/w500/aciP8Km0waTLGQi06KiHzE9Y0H0.jpg', emoji:'🃏', genre:'Drama', year:2026, rating:8.5 },
+    { title:'Matrix Resurrecciones', poster:'https://image.tmdb.org/t/p/w500/8c4a8kE7PizaGQQvMiZ5guUB17x.jpg', emoji:'💊', genre:'Ciencia Ficción', year:2026, rating:8.0 },
+    { title:'Rápidos y Furiosos X', poster:'https://image.tmdb.org/t/p/w500/fiVW06jE7z9YnO4trhaMEdclSiC.jpg', emoji:'🏎️', genre:'Acción', year:2026, rating:7.4 },
+    { title:'El Origen', poster:'https://image.tmdb.org/t/p/w500/edv5CZvWj09upOsy2Y6IwDhK8bt.jpg', emoji:'🌀', genre:'Suspenso', year:2026, rating:9.0 },
+    { title:'Batman', poster:'https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg', emoji:'🦇', genre:'Acción', year:2026, rating:8.6 },
+    { title:'Parásitos', poster:'https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg', emoji:'🏚️', genre:'Drama', year:2026, rating:9.1 },
+    { title:'Alien: Romulus', poster:'https://image.tmdb.org/t/p/w500/b33nnKl12vfwh49MmQiYVno9qvO.jpg', emoji:'👾', genre:'Terror', year:2026, rating:7.7 },
+    { title:'Mortal Kombat', poster:'https://image.tmdb.org/t/p/w500/nkayOAUBUu4mM23Nf9SKGCYDUgt.jpg', emoji:'🥊', genre:'Acción', year:2026, rating:7.3 },
+    { title:'Jurassic World: Dominio', poster:'https://image.tmdb.org/t/p/w500/kAVRgw7GgK1CfYEJqYRajnrqYAn.jpg', emoji:'🦕', genre:'Aventura', year:2026, rating:7.6 },
+    { title:'Misión Imposible: Sentencia Mortal', poster:'https://image.tmdb.org/t/p/w500/NNxYkU70HPurnNCSiCjYAmacwm.jpg', emoji:'🕵️', genre:'Acción', year:2026, rating:8.3 },
+    { title:'Pantera Negra: Wakanda por Siempre', poster:'https://image.tmdb.org/t/p/w500/sv1xJUazXeYqALzczSZ3O6nkH75.jpg', emoji:'🐾', genre:'Acción', year:2026, rating:8.4 },
+    { title:'Doctor Strange en el Multiverso de la Locura', poster:'https://image.tmdb.org/t/p/w500/uGBVj34PvFiBVkiWUEzg94bJ95.jpg', emoji:'✨', genre:'Fantasía', year:2026, rating:8.1 },
+    { title:'Guardianes de la Galaxia Vol. 3', poster:'https://image.tmdb.org/t/p/w500/r2J02Z2OpNTctfOSN2Ydgii51I3.jpg', emoji:'🌌', genre:'Acción', year:2026, rating:8.0 },
+    { title:'Deadpool y Wolverine', poster:'https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg', emoji:'🗡️', genre:'Comedia', year:2026, rating:8.8 },
+    { title:'Aquaman y el Reino Perdido', poster:'https://image.tmdb.org/t/p/w500/8xV47NDrjdZNpkVcCFqccqqap4F.jpg', emoji:'🌊', genre:'Acción', year:2026, rating:7.5 },
+    { title:'Flash', poster:'https://image.tmdb.org/t/p/w500/rktDFPbfHfUbArZ6OOOKsXcv0Bm.jpg', emoji:'⚡', genre:'Ciencia Ficción', year:2026, rating:7.9 },
+    { title:'Star Wars: El Despertar de la Fuerza', poster:'https://image.tmdb.org/t/p/w500/wqnLdwVXoBjKibFRR5U300AhOiL.jpg', emoji:'⭐', genre:'Ciencia Ficción', year:2026, rating:9.0 },
+    { title:'Indiana Jones y el Dial del Destino', poster:'https://image.tmdb.org/t/p/w500/Af4bXE63pVsb2FtbW8uYIyPBadD.jpg', emoji:'🏺', genre:'Aventura', year:2026, rating:8.2 },
+    { title:'Top Gun: Maverick', poster:'https://image.tmdb.org/t/p/w500/62HCnUTziyWcpDaBO2i1DX17ljH.jpg', emoji:'✈️', genre:'Acción', year:2026, rating:8.5 },
+    { title:'Gladiador II', poster:'https://image.tmdb.org/t/p/w500/2cxhvwyEwRlysAmRH4iodkvo0z5.jpg', emoji:'⚔️', genre:'Drama', year:2026, rating:8.7 },
+    { title:'El Exorcista: Creyentes', poster:'https://image.tmdb.org/t/p/w500/qVKvdOLUQ9ogHGFl2q0HG4Bct38.jpg', emoji:'😱', genre:'Terror', year:2026, rating:7.4 },
+    { title:'La Gran Estafa', poster:'https://image.tmdb.org/t/p/w500/vbpO8Q6xW49Y9p24L1k8F7C6csm.jpg', emoji:'🎰', genre:'Comedia', year:2026, rating:7.8 },
+    { title:'Rápidos y Furiosos 9', poster:'https://image.tmdb.org/t/p/w500/bOFaAXmWWXC3Rbv4u4uM9ZSzRXP.jpg', emoji:'🏁', genre:'Acción', year:2026, rating:7.2 },
+    { title:'El Planeta de los Simios: Nuevo Reino', poster:'https://image.tmdb.org/t/p/w500/gKkl37BQuKTanygYQG1pyYgLVgf.jpg', emoji:'🦍', genre:'Ciencia Ficción', year:2026, rating:7.9 },
+    { title:'Sin Tiempo para Morir', poster:'https://image.tmdb.org/t/p/w500/iUgygt3fWWrOQtcvXQI4bAGM4Mr.jpg', emoji:'🔫', genre:'Acción', year:2026, rating:8.1 },
+    { title:'Pesadilla en la Calle Elm', poster:'https://image.tmdb.org/t/p/w500/wETz3P9t4o0b1c062x28xH3kC28.jpg', emoji:'🌙', genre:'Terror', year:2026, rating:7.6 },
+    { title:'Encanto', poster:'https://image.tmdb.org/t/p/w500/4j0PNHkMr5ax3AsUsV246IOui0j.jpg', emoji:'🌺', genre:'Animación', year:2026, rating:8.3 },
+    { title:'Shrek', poster:'https://image.tmdb.org/t/p/w500/iB64vpL3dIObOtMZgX3RqWCPCeg.jpg', emoji:'🧅', genre:'Comedia', year:2026, rating:8.6 },
+    { title:'Furiosa: De la Saga de Mad Max', poster:'https://image.tmdb.org/t/p/w500/iADOJ8Zymht2JPMoy3R7xUMZ51.jpg', emoji:'🚗', genre:'Acción', year:2026, rating:8.0 },
+    { title:'Las Marvels', poster:'https://image.tmdb.org/t/p/w500/9HQYekW0b3DkE6z3lWqC73fX4zD.jpg', emoji:'💫', genre:'Acción', year:2026, rating:7.8 },
+    { title:'Saw X: El Juego del Miedo', poster:'https://image.tmdb.org/t/p/w500/b16RAVWW28gO3b9x2j3o4P0r7.jpg', emoji:'🩸', genre:'Terror', year:2026, rating:7.0 },
+    { title:'Wonka', poster:'https://image.tmdb.org/t/p/w500/qhb1qYHeY97Ol5zXOJ0ZWY75yQO.jpg', emoji:'🍫', genre:'Fantasía', year:2026, rating:8.1 },
+  ];
+
+  const MOVIES_PER_PAGE = 6;
+
+  /* ======= PAGE NAV ======= */
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    window.scrollTo({ top:0, behavior:'smooth' });
+    if(id === 'catalog') renderCatalog(1);
+    if(id === 'seats')   renderSeats();
+    setTimeout(initReveal, 100);
+    if(id === 'home') animateCounters();
+  }
+
+  /* ======= SCROLL REVEAL ======= */
+  function initReveal() {
+    const reveals = document.querySelectorAll('.page.active .reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if(e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(r => observer.observe(r));
+  }
+
+  /* ======= COUNTER ANIMATION ======= */
+  function animateCounters() {
+    document.querySelectorAll('[data-count]').forEach(el => {
+      const target = parseInt(el.dataset.count);
+      const duration = 1200;
+      const steps = 50;
+      let current = 0;
+      const step = target / steps;
+      const interval = setInterval(() => {
+        current = Math.min(current + step, target);
+        el.textContent = target >= 10000
+          ? Math.floor(current).toLocaleString('es-AR') + '+'
+          : Math.floor(current) + (el.textContent.includes('%') ? '%' : '');
+        if(current >= target) clearInterval(interval);
+      }, duration / steps);
+    });
+  }
+
+  /* ======= HERO STARS ======= */
+  function createHeroStars() {
+    const container = document.getElementById('heroStars');
+    if(!container) return;
+    for(let i = 0; i < 20; i++) {
+      const star = document.createElement('div');
+      star.className = 'star-dot';
+      const size = Math.random() * 4 + 2;
+      star.style.cssText = `
+        width: ${size}px; height: ${size}px;
+        top: ${Math.random() * 100}%;
+        left: ${Math.random() * 100}%;
+        animation-delay: ${Math.random() * 3}s;
+        animation-duration: ${3 + Math.random() * 3}s, ${4 + Math.random() * 4}s;
+        opacity: ${0.3 + Math.random() * 0.5};
+      `;
+      container.appendChild(star);
+    }
+  }
+
+  /* ======= CATALOG CON POSTERS Y NOMBRES EN ESPAÑOL ======= */
+  function renderCatalog(page) {
+    const grid = document.getElementById('catalogGrid');
+    const pag  = document.getElementById('catalogPagination');
+    const totalPages = Math.ceil(allMovies.length / MOVIES_PER_PAGE);
+    const start  = (page - 1) * MOVIES_PER_PAGE;
+    const movies = allMovies.slice(start, start + MOVIES_PER_PAGE);
+
+    grid.innerHTML = movies.map(m => `
+      <div class="catalog-card" onclick="startBooking('${m.title.replace(/'/g,"\\'")}','Sala 1')">
+        <div class="catalog-poster-wrap">
+          <img class="catalog-poster" src="${m.poster}" alt="${m.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+          <div class="catalog-poster-fallback" style="display:none;">${m.emoji}</div>
+        </div>
+        <div class="catalog-info">
+          <div class="catalog-title">${m.title}</div>
+          <div class="catalog-meta">${m.year} &bull; <span style="color:var(--yellow)">★</span> ${m.rating}</div>
+          <div class="catalog-genre">${m.genre}</div>
+          <button class="catalog-btn" onclick="event.stopPropagation();startBooking('${m.title.replace(/'/g,"\\'")}','Sala 1')">🎟️ Comprar Entrada</button>
+        </div>
+      </div>
+    `).join('');
+
+    pag.innerHTML = '';
+    for(let i = 1; i <= totalPages; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'page-btn' + (i === page ? ' active-page' : '');
+      btn.textContent = i;
+      btn.onclick = () => renderCatalog(i);
+      pag.appendChild(btn);
+    }
+
+    setTimeout(initReveal, 100);
+  }
+
+  /* ======= SEATS ======= */
+  const takenSeats = ['A2','A5','B1','B4','C3','C6','D2','D5','E1','E4','F3','F6','G2','G7'];
+
+  function renderSeats() {
+    const layout = document.getElementById('seatLayout');
+    const rows = ['A','B','C','D','E','F','G'];
+    layout.innerHTML = '';
+    selectedSeats = [];
+
+    rows.forEach((row, ri) => {
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'seat-row';
+      rowDiv.style.animationDelay = (ri * 0.08) + 's';
+
+      const lbl = document.createElement('div');
+      lbl.className = 'seat-row-label';
+      lbl.textContent = row;
+      rowDiv.appendChild(lbl);
+
+      for(let c = 1; c <= 10; c++) {
+        const id = row + c;
+        const seat = document.createElement('div');
+        seat.className = 'seat ' + (takenSeats.includes(id) ? 'taken' : 'available');
+        seat.dataset.id = id;
+        seat.textContent = c;
+        seat.style.transitionDelay = (c * 0.03) + 's';
+        if(!takenSeats.includes(id)) seat.onclick = () => toggleSeat(seat, id);
+        rowDiv.appendChild(seat);
+      }
+
+      const lbl2 = document.createElement('div');
+      lbl2.className = 'seat-row-label';
+      lbl2.textContent = row;
+      rowDiv.appendChild(lbl2);
+      layout.appendChild(rowDiv);
+    });
+    updateSeatLabel();
+  }
+
+  function toggleSeat(el, id) {
+    if(el.classList.contains('selected')) {
+      el.classList.remove('selected');
+      el.classList.add('available');
+      selectedSeats = selectedSeats.filter(s => s !== id);
+    } else {
+      el.classList.remove('available');
+      el.classList.add('selected');
+      selectedSeats.push(id);
+    }
+    updateSeatLabel();
+  }
+
+  function updateSeatLabel() {
+    const lbl = document.getElementById('selectedSeatsLabel');
+    lbl.textContent = selectedSeats.length === 0
+      ? 'Ningún asiento seleccionado'
+      : `✅ Seleccionados: ${selectedSeats.join(', ')} (${selectedSeats.length} entrada${selectedSeats.length > 1 ? 's' : ''} — Total: $${(2500*selectedSeats.length).toLocaleString('es-AR')})`;
+  }
+
+  /* ======= BOOKING ======= */
+  function startBooking(movie, sala) {
+    selectedMovie = movie;
+    selectedSala  = sala;
+    document.getElementById('seatsMovieLabel').textContent = `${movie} · ${sala}`;
+    showPage('seats');
+  }
+
+  function goToPurchase() {
+    if(selectedSeats.length === 0) { showNotification('⚠️ Seleccioná al menos un asiento', 'error'); return; }
+    document.getElementById('summaryMovie').textContent = selectedMovie;
+    document.getElementById('summarySala').textContent  = selectedSala;
+    document.getElementById('summarySeats').textContent = selectedSeats.join(', ');
+    document.getElementById('summaryTime').textContent  = '20:15';
+    document.getElementById('summaryTotal').textContent = '$' + (2500 * selectedSeats.length).toLocaleString('es-AR');
+    showPage('purchase');
+  }
+
+  function goToPayment() {
+    const name  = document.getElementById('purchaseName').value.trim();
+    const email = document.getElementById('purchaseEmail').value.trim();
+    const dni   = document.getElementById('purchaseDNI').value.trim();
+    if(!name || !email || !dni) { showNotification('⚠️ Completá los campos obligatorios', 'error'); return; }
+    document.getElementById('paymentMovie').textContent = selectedMovie;
+    document.getElementById('paymentSeats').textContent = selectedSeats.join(', ');
+    document.getElementById('paymentTotal').textContent = '$' + (2500 * selectedSeats.length).toLocaleString('es-AR');
+    if(currentUser) {
+      document.getElementById('walletPaymentOption').style.display = 'block';
+      document.getElementById('walletPayBalance').textContent = '$' + userBalance.toLocaleString('es-AR');
+    }
+    showPage('payment');
+  }
+
+  function confirmPurchase() {
+    showSuccessModal('¡Compra Confirmada! 🎉', `Tu entrada para "${selectedMovie}" está lista.\nTe enviamos el QR a tu email.\n¡Disfrutá la película!`);
+    selectedSeats = [];
+    setTimeout(() => { closeSuccessModal(); showPage('home'); }, 4000);
+  }
+
+  /* ======= LOGIN ======= */
+  function openLoginModal(cb) {
+    loginCallback = cb || null;
+    document.getElementById('loginModal').classList.add('open');
+    document.getElementById('loginError').style.display = 'none';
+    document.getElementById('registerError').style.display = 'none';
+    switchTab('login');
+  }
+  function closeLoginModal() {
+    document.getElementById('loginModal').classList.remove('open');
+    loginCallback = null;
+  }
+  function switchTab(tab) {
+    document.getElementById('loginForm').style.display    = tab==='login'    ? 'block' : 'none';
+    document.getElementById('registerForm').style.display = tab==='register' ? 'block' : 'none';
+    document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+    document.getElementById('tabRegister').classList.toggle('active', tab==='register');
+  }
+  function doLogin() {
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const pass  = document.getElementById('loginPassword').value;
+    const err   = document.getElementById('loginError');
+    if(!email||!pass) { err.style.display='block'; err.textContent='Completá todos los campos.'; return; }
+    if(!users[email]||users[email].password!==pass) { err.style.display='block'; err.textContent='Usuario o contraseña incorrectos.'; return; }
+    currentUser = email;
+    userBalance = users[email].balance;
+    updateNavUser();
+    closeLoginModal();
+    showNotification(`👋 Bienvenido, ${users[email].name}!`, 'success');
+    if(loginCallback) { loginCallback(); loginCallback=null; }
+  }
+  function doRegister() {
+    const name  = document.getElementById('regName').value.trim();
+    const last  = document.getElementById('regLastName').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const pass  = document.getElementById('regPassword').value;
+    const pass2 = document.getElementById('regPassword2').value;
+    const err   = document.getElementById('registerError');
+    if(!name||!last||!email||!pass||!pass2) { err.style.display='block'; err.textContent='Completá todos los campos.'; return; }
+    if(pass!==pass2) { err.style.display='block'; err.textContent='Las contraseñas no coinciden.'; return; }
+    if(pass.length<4) { err.style.display='block'; err.textContent='Mínimo 4 caracteres.'; return; }
+    if(users[email]) { err.style.display='block'; err.textContent='Email ya registrado.'; return; }
+    users[email] = { password:pass, name, lastName:last, balance:0 };
+    currentUser = email; userBalance = 0;
+    updateNavUser();
+    closeLoginModal();
+    showNotification(`🎉 Cuenta creada. Bienvenido, ${name}!`, 'success');
+    if(loginCallback) { loginCallback(); loginCallback=null; }
+  }
+  function logout() {
+    currentUser = null; userBalance = 0; updateNavUser();
+    showNotification('👋 Sesión cerrada.', '');
+  }
+  function updateNavUser() {
+    const logged = !!currentUser;
+    document.getElementById('loginNavBtn').style.display  = logged ? 'none' : '';
+    document.getElementById('logoutBtn').style.display    = logged ? '' : 'none';
+    document.getElementById('navUsername').style.display  = logged ? '' : 'none';
+    document.getElementById('navBalance').style.display   = logged ? '' : 'none';
+    if(logged) {
+      document.getElementById('navUsername').textContent = `👤 ${users[currentUser].name}`;
+      document.getElementById('navBalance').textContent  = `💰 $${userBalance.toLocaleString('es-AR')}`;
+    }
+  }
+
+  /* ======= WALLET ======= */
+  function openWallet() {
+    if(!currentUser) { openLoginModal(() => openWallet()); return; }
+    document.getElementById('walletCurrentBalance').textContent = '$' + userBalance.toLocaleString('es-AR');
+    document.getElementById('customAmount').value = '';
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected-preset'));
+    selectedPreset = 0;
+    document.getElementById('walletModal').classList.add('open');
+  }
+  function closeWalletModal() { document.getElementById('walletModal').classList.remove('open'); }
+
+  function setPreset(val) {
+    selectedPreset = val;
+    document.getElementById('customAmount').value = '';
+    document.querySelectorAll('.preset-btn').forEach(b => {
+      const v = parseInt(b.textContent.replace(/\D/g,''));
+      b.classList.toggle('selected-preset', v === val);
+    });
+  }
+  function clearPresets() {
+    selectedPreset = 0;
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected-preset'));
+  }
+  function selectPayMethod(el, method) {
+    document.querySelectorAll('.payment-option').forEach(o => {
+      o.classList.remove('selected-method');
+      o.querySelector('input[type=radio]').checked = false;
+    });
+    el.classList.add('selected-method');
+    el.querySelector('input[type=radio]').checked = true;
+    document.getElementById('walletCardFields').style.display = method==='card' ? '' : 'none';
+  }
+  function confirmWalletLoad() {
+    const custom = parseInt(document.getElementById('customAmount').value) || 0;
+    const amount = selectedPreset || custom;
+    if(!amount || amount < 100) { showNotification('⚠️ Ingresá un monto válido (mínimo $100)', 'error'); return; }
+    userBalance += amount;
+    users[currentUser].balance = userBalance;
+    updateNavUser();
+    closeWalletModal();
+    showSuccessModal('💰 ¡Saldo Cargado!', `Se acreditaron $${amount.toLocaleString('es-AR')} a tu billetera Cinecks.\nSaldo actual: $${userBalance.toLocaleString('es-AR')}`);
+    selectedPreset = 0;
+  }
+
+  /* ======= SUCCESS MODAL ======= */
+  function showSuccessModal(title, msg) {
+    document.getElementById('successTitle').textContent = title;
+    document.getElementById('successMsg').textContent   = msg;
+    document.getElementById('successModal').classList.add('open');
+  }
+  function closeSuccessModal() { document.getElementById('successModal').classList.remove('open'); }
+
+  /* ======= NOTIFICATIONS ======= */
+  function showNotification(msg, type) {
+    document.querySelectorAll('.notification').forEach(n => n.remove());
+    const n = document.createElement('div');
+    n.className = `notification ${type}`;
+    n.textContent = msg;
+    document.body.appendChild(n);
+    setTimeout(() => n.style.opacity='0', 3000);
+    setTimeout(() => n.remove(), 3400);
+  }
+
+  /* ======= MODAL BACKDROP ======= */
+  ['loginModal','walletModal','successModal'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e) {
+      if(e.target === this) this.classList.remove('open');
+    });
+  });
+
+  /* ======= INIT ======= */
+  createHeroStars();
+  animateCounters();
+  renderCatalog(1);
+  setTimeout(initReveal, 300);
+</script>
+</body>
+</html>
