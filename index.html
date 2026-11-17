@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -469,6 +469,23 @@
       display: block;
       transition: transform 0.5s ease;
     }
+    .poster-fallback {
+      width: 100%;
+      aspect-ratio: 2/3;
+      display: flex;
+      align-items: flex-end;
+      padding: 18px;
+      background: linear-gradient(160deg, #303030, #121212 70%);
+      border-bottom: 4px solid var(--yellow);
+    }
+    .poster-fallback-title {
+      font-size: clamp(1.1rem, 3vw, 2rem);
+      font-weight: 900;
+      line-height: 1.1;
+      text-transform: uppercase;
+      overflow-wrap: anywhere;
+    }
+    .poster-fallback[hidden] { display: none; }
     .movie-card:hover .movie-poster { transform: scale(1.06); }
 
     /* Overlay on hover */
@@ -699,15 +716,7 @@
       transition: transform 0.4s ease;
     }
     .catalog-card:hover .catalog-poster { transform: scale(1.08); }
-    .catalog-poster-fallback {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 4rem;
-      background: linear-gradient(145deg, #2a2a2a, #181818);
-    }
+    .admin-movie-poster { width: 42px; height: 63px; object-fit: cover; display: block; border-radius: 4px; }
     .catalog-info { padding: 14px; }
     .catalog-title { font-weight: 800; font-size: 1rem; margin-bottom: 4px; }
     .catalog-meta { color: var(--muted); font-size: 0.78rem; }
@@ -1346,202 +1355,19 @@
   <!-- FUNCIONES DEL DÍA -->
   <div class="section section-dark">
     <div class="section-title reveal"><span class="accent">📅</span> Funciones de Hoy</div>
-    <div class="funciones-grid">
-      <div class="funcion-card reveal delay-1" onclick="startBooking('Avatar: Fuego y Cenizas','Sala 1')">
-        <div class="funcion-time">14:30</div>
-        <div class="funcion-movie">Avatar: Fuego y Cenizas</div>
-        <div class="funcion-sala">Sala 1 — IMAX 3D</div>
-        <div class="funcion-badge">3D IMAX</div>
-      </div>
-      <div class="funcion-card reveal delay-2" onclick="startBooking('El Señor de los Anillos: El Retorno del Rey','Sala 2')">
-        <div class="funcion-time">16:00</div>
-        <div class="funcion-movie">El Señor de los Anillos: El Retorno del Rey</div>
-        <div class="funcion-sala">Sala 2 — Premium</div>
-        <div class="funcion-badge">Premium</div>
-      </div>
-      <div class="funcion-card reveal delay-3" onclick="startBooking('Duna: Parte Dos','Sala 3')">
-        <div class="funcion-time">18:45</div>
-        <div class="funcion-movie">Duna: Parte Dos</div>
-        <div class="funcion-sala">Sala 3 — 4DX</div>
-        <div class="funcion-badge">4DX</div>
-      </div>
-      <div class="funcion-card reveal delay-4" onclick="startBooking('Spider-Man: A Través del Spider-Verso','Sala 4')">
-        <div class="funcion-time">20:15</div>
-        <div class="funcion-movie">Spider-Man: A Través del Spider-Verso</div>
-        <div class="funcion-sala">Sala 4 — 2D</div>
-        <div class="funcion-badge">2D</div>
-      </div>
-      <div class="funcion-card reveal delay-5" onclick="startBooking('Oppenheimer','Sala 5')">
-        <div class="funcion-time">21:30</div>
-        <div class="funcion-movie">Oppenheimer</div>
-        <div class="funcion-sala">Sala 5 — IMAX</div>
-        <div class="funcion-badge">IMAX</div>
-      </div>
-      <div class="funcion-card reveal delay-5" onclick="startBooking('Interestelar','Sala 1')">
-        <div class="funcion-time">23:00</div>
-        <div class="funcion-movie">Interestelar</div>
-        <div class="funcion-sala">Sala 1 — IMAX</div>
-        <div class="funcion-badge">IMAX</div>
-      </div>
-    </div>
+    <div class="funciones-grid" id="todayShowtimes"></div>
   </div>
 
   <!-- PELÍCULAS MÁS VISTAS — con posters reales -->
   <div class="section">
     <div class="section-title reveal"><span class="accent">🔥</span> Películas Más Vistas</div>
-    <div class="most-watched-row" id="mostWatchedRow">
-
-      <!-- Card 1: Avatar Way of Water -->
-      <div class="movie-card reveal delay-1" onclick="startBooking('Avatar: Fuego y Cenizas','Sala 1 IMAX')">
-        <div class="rank-badge">#1</div>
-        <img class="movie-poster"
-             src="https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg"
-             onerror="this.style.display='none';this.nextSibling.style.display='flex';"
-             alt="Avatar: Fuego y Cenizas" />
-        <div style="display:none;width:100%;aspect-ratio:2/3;align-items:center;justify-content:center;font-size:5rem;background:linear-gradient(145deg,#001a3a,#000d1f);">🌊</div>
-        <div class="movie-overlay">
-          <button class="overlay-btn" onclick="event.stopPropagation();startBooking('Avatar: Fuego y Cenizas','Sala 1 IMAX')">🎟️ Comprar Entrada</button>
-        </div>
-        <div class="movie-card-body">
-          <div class="movie-card-title">Avatar: Fuego y Cenizas</div>
-          <div class="movie-card-genre">Ciencia Ficción · IMAX</div>
-          <div class="movie-card-rating"><span class="star-icon">★</span> 9.1 · 2026</div>
-        </div>
-      </div>
-
-      <!-- Card 2: Spider-Man Across the Spider-Verse -->
-      <div class="movie-card reveal delay-2" onclick="startBooking('Spider-Man: A Través del Spider-Verso','Sala 4')">
-        <div class="rank-badge">#2</div>
-        <img class="movie-poster"
-             src="https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg"
-             onerror="this.style.display='none';this.nextSibling.style.display='flex';"
-             alt="Spider-Man: A Través del Spider-Verso" />
-        <div style="display:none;width:100%;aspect-ratio:2/3;align-items:center;justify-content:center;font-size:5rem;background:linear-gradient(145deg,#1a001a,#0d000d);">🕷️</div>
-        <div class="movie-overlay">
-          <button class="overlay-btn" onclick="event.stopPropagation();startBooking('Spider-Man: A Través del Spider-Verso','Sala 4')">🎟️ Comprar Entrada</button>
-        </div>
-        <div class="movie-card-body">
-          <div class="movie-card-title">Spider-Man: A Través del Spider-Verso</div>
-          <div class="movie-card-genre">Acción · Superhéroes</div>
-          <div class="movie-card-rating"><span class="star-icon">★</span> 8.7 · 2026</div>
-        </div>
-      </div>
-
-      <!-- Card 3: Dune Part Two -->
-      <div class="movie-card reveal delay-3" onclick="startBooking('Duna: Parte Dos','Sala 3')">
-        <div class="rank-badge">#3</div>
-        <img class="movie-poster"
-             src="https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg"
-             onerror="this.style.display='none';this.nextSibling.style.display='flex';"
-             alt="Duna: Parte Dos" />
-        <div style="display:none;width:100%;aspect-ratio:2/3;align-items:center;justify-content:center;font-size:5rem;background:linear-gradient(145deg,#1a1000,#0d0800);">🏜️</div>
-        <div class="movie-overlay">
-          <button class="overlay-btn" onclick="event.stopPropagation();startBooking('Duna: Parte Dos','Sala 3')">🎟️ Comprar Entrada</button>
-        </div>
-        <div class="movie-card-body">
-          <div class="movie-card-title">Duna: Parte Dos</div>
-          <div class="movie-card-genre">Ciencia Ficción · 4DX</div>
-          <div class="movie-card-rating"><span class="star-icon">★</span> 9.0 · 2026</div>
-        </div>
-      </div>
-
-      <!-- Card 4: Oppenheimer -->
-      <div class="movie-card reveal delay-4" onclick="startBooking('Oppenheimer','Sala 5')">
-        <div class="rank-badge">#4</div>
-        <img class="movie-poster"
-             src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg"
-             onerror="this.style.display='none';this.nextSibling.style.display='flex';"
-             alt="Oppenheimer" />
-        <div style="display:none;width:100%;aspect-ratio:2/3;align-items:center;justify-content:center;font-size:5rem;background:linear-gradient(145deg,#1a0000,#0d0000);">💣</div>
-        <div class="movie-overlay">
-          <button class="overlay-btn" onclick="event.stopPropagation();startBooking('Oppenheimer','Sala 5')">🎟️ Comprar Entrada</button>
-        </div>
-        <div class="movie-card-body">
-          <div class="movie-card-title">Oppenheimer</div>
-          <div class="movie-card-genre">Drama Histórico</div>
-          <div class="movie-card-rating"><span class="star-icon">★</span> 8.9 · 2026</div>
-        </div>
-      </div>
-
-      <!-- Card 5: Interstellar -->
-      <div class="movie-card reveal delay-5" onclick="startBooking('Interestelar','Sala 1')">
-        <div class="rank-badge">#5</div>
-        <img class="movie-poster"
-             src="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
-             onerror="this.style.display='none';this.nextSibling.style.display='flex';"
-             alt="Interestelar" />
-        <div style="display:none;width:100%;aspect-ratio:2/3;align-items:center;justify-content:center;font-size:5rem;background:linear-gradient(145deg,#00001a,#00000d);">🚀</div>
-        <div class="movie-overlay">
-          <button class="overlay-btn" onclick="event.stopPropagation();startBooking('Interestelar','Sala 1')">🎟️ Comprar Entrada</button>
-        </div>
-        <div class="movie-card-body">
-          <div class="movie-card-title">Interestelar</div>
-          <div class="movie-card-genre">Ciencia Ficción · IMAX</div>
-          <div class="movie-card-rating"><span class="star-icon">★</span> 9.2 · 2026</div>
-        </div>
-      </div>
-
-    </div>
+    <div class="most-watched-row" id="mostWatchedRow"></div>
   </div>
 
   <!-- PRÓXIMAS PELÍCULAS -->
   <div class="section section-dark">
     <div class="section-title reveal"><span class="accent">🎭</span> Próximas Películas</div>
-    <div class="upcoming-row">
-
-      <div class="upcoming-card reveal delay-1">
-        <span class="upcoming-label">PRONTO</span>
-        <img class="upcoming-poster"
-             src="https://image.tmdb.org/t/p/w500/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg"
-             onerror="this.style.display='none';this.nextSibling.style.display='flex';"
-             alt="El Señor de los Anillos: El Retorno del Rey" />
-        <div style="display:none;width:100%;aspect-ratio:2/3;align-items:center;justify-content:center;font-size:4rem;background:linear-gradient(145deg,#1a1500,#0a0a0a);">⚔️</div>
-        <div class="upcoming-body">
-          <div class="upcoming-title">El Señor de los Anillos: El Retorno del Rey</div>
-          <div class="upcoming-genre">Fantasía Épica</div>
-        </div>
-      </div>
-
-      <div class="upcoming-card reveal delay-2">
-        <span class="upcoming-label">PRONTO</span>
-        <img class="upcoming-poster"
-             src="https://image.tmdb.org/t/p/w500/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg"
-             onerror="this.style.display='none';this.nextSibling.style.display='flex';"
-             alt="Terminator: Destino Oculto" />
-        <div style="display:none;width:100%;aspect-ratio:2/3;align-items:center;justify-content:center;font-size:4rem;background:linear-gradient(145deg,#1a0000,#0a0a0a);">🤖</div>
-        <div class="upcoming-body">
-          <div class="upcoming-title">Terminator: Destino Oculto</div>
-          <div class="upcoming-genre">Acción · Sci-Fi</div>
-        </div>
-      </div>
-
-      <div class="upcoming-card reveal delay-3">
-        <span class="upcoming-label">PRONTO</span>
-        <img class="upcoming-poster"
-             src="https://image.tmdb.org/t/p/w500/bQXAqRx2Fgc46uCVWgoPz5L5Dtr.jpg"
-             onerror="this.style.display='none';this.nextSibling.style.display='flex';"
-             alt="Thor: Amor y Trueno" />
-        <div style="display:none;width:100%;aspect-ratio:2/3;align-items:center;justify-content:center;font-size:4rem;background:linear-gradient(145deg,#001a2a,#0a0a0a);">🦸</div>
-        <div class="upcoming-body">
-          <div class="upcoming-title">Thor: Amor y Trueno</div>
-          <div class="upcoming-genre">Superhéroes</div>
-        </div>
-      </div>
-
-      <div class="upcoming-card reveal delay-4">
-        <span class="upcoming-label">PRONTO</span>
-        <img class="upcoming-poster"
-             src="https://image.tmdb.org/t/p/w500/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg"
-             onerror="this.style.display='none';this.nextSibling.style.display='flex';"
-             alt="El Conjuro: El Diablo me Obligó a Hacerlo" />
-        <div style="display:none;width:100%;aspect-ratio:2/3;align-items:center;justify-content:center;font-size:4rem;background:linear-gradient(145deg,#0a000d,#0a0a0a);">👻</div>
-        <div class="upcoming-body">
-          <div class="upcoming-title">El Conjuro: El Diablo me Obligó a Hacerlo</div>
-          <div class="upcoming-genre">Terror</div>
-        </div>
-      </div>
-
-    </div>
+    <div class="upcoming-row" id="upcomingMovies"></div>
   </div>
 
   <!-- ACTORES -->
@@ -1643,62 +1469,62 @@
       <span class="breadcrumb-current">Nuestros Cines</span>
     </div>
     <h1>Nuestros Cines a Elegir</h1>
-    <p>Elegí la sucursal más cercana a vos</p>
+    <p>Elegí la sucursal más cercana a vos; después vas a poder elegir la película.</p>
   </div>
   <div class="section">
     <div class="cinemas-grid">
-      <div class="cinema-card" onclick="startBooking('Avatar: Fuego y Cenizas','Cinecks Palermo · Sala 1 IMAX')">
+      <div class="cinema-card" onclick="selectCinema('Cinecks Palermo · Sala 1 IMAX')">
         <div class="cinema-banner">🏙️</div>
         <div class="cinema-info">
           <div class="cinema-name">Cinecks Palermo</div>
           <div class="cinema-address">📍 Av. Santa Fe 3450, Palermo, CABA</div>
           <div class="cinema-badges"><span class="badge">IMAX</span><span class="badge">4DX</span><span class="badge">Premium</span></div>
-          <button class="cinema-btn">Elegir Función</button>
+          <button class="cinema-btn">Elegir Sucursal</button>
         </div>
       </div>
-      <div class="cinema-card" onclick="startBooking('Duna: Parte Dos','Cinecks Recoleta · Sala Premium')">
+      <div class="cinema-card" onclick="selectCinema('Cinecks Recoleta · Sala Premium')">
         <div class="cinema-banner">🌆</div>
         <div class="cinema-info">
           <div class="cinema-name">Cinecks Recoleta</div>
           <div class="cinema-address">📍 Av. Pueyrredón 1200, Recoleta, CABA</div>
           <div class="cinema-badges"><span class="badge">3D</span><span class="badge">Premium</span></div>
-          <button class="cinema-btn">Elegir Función</button>
+          <button class="cinema-btn">Elegir Sucursal</button>
         </div>
       </div>
-      <div class="cinema-card" onclick="startBooking('Spider-Man: A Través del Spider-Verso','Cinecks Belgrano · Sala 3D')">
+      <div class="cinema-card" onclick="selectCinema('Cinecks Belgrano · Sala 3D')">
         <div class="cinema-banner">🏘️</div>
         <div class="cinema-info">
           <div class="cinema-name">Cinecks Belgrano</div>
           <div class="cinema-address">📍 Av. Cabildo 2500, Belgrano, CABA</div>
           <div class="cinema-badges"><span class="badge">IMAX</span><span class="badge">2D</span><span class="badge">3D</span></div>
-          <button class="cinema-btn">Elegir Función</button>
+          <button class="cinema-btn">Elegir Sucursal</button>
         </div>
       </div>
-      <div class="cinema-card" onclick="startBooking('Interestelar','Cinecks Caballito · Sala 2')">
+      <div class="cinema-card" onclick="selectCinema('Cinecks Caballito · Sala 2')">
         <div class="cinema-banner">🎠</div>
         <div class="cinema-info">
           <div class="cinema-name">Cinecks Caballito</div>
           <div class="cinema-address">📍 Rivadavia 5000, Caballito, CABA</div>
           <div class="cinema-badges"><span class="badge">2D</span><span class="badge">3D</span></div>
-          <button class="cinema-btn">Elegir Función</button>
+          <button class="cinema-btn">Elegir Sucursal</button>
         </div>
       </div>
-      <div class="cinema-card" onclick="startBooking('Oppenheimer','Cinecks La Plata · Sala IMAX')">
+      <div class="cinema-card" onclick="selectCinema('Cinecks La Plata · Sala IMAX')">
         <div class="cinema-banner">🏛️</div>
         <div class="cinema-info">
           <div class="cinema-name">Cinecks La Plata</div>
           <div class="cinema-address">📍 Calle 7 Nº 740, La Plata, PBA</div>
           <div class="cinema-badges"><span class="badge">IMAX</span><span class="badge">4DX</span></div>
-          <button class="cinema-btn">Elegir Función</button>
+          <button class="cinema-btn">Elegir Sucursal</button>
         </div>
       </div>
-      <div class="cinema-card" onclick="startBooking('El Señor de los Anillos: El Retorno del Rey','Cinecks Córdoba · Sala 1')">
+      <div class="cinema-card" onclick="selectCinema('Cinecks Córdoba · Sala 1')">
         <div class="cinema-banner">🌄</div>
         <div class="cinema-info">
           <div class="cinema-name">Cinecks Córdoba</div>
           <div class="cinema-address">📍 Av. Colón 450, Córdoba Capital</div>
           <div class="cinema-badges"><span class="badge">Premium</span><span class="badge">3D</span></div>
-          <button class="cinema-btn">Elegir Función</button>
+          <button class="cinema-btn">Elegir Sucursal</button>
         </div>
       </div>
     </div>
@@ -2019,9 +1845,9 @@
             <option value="Fantasía">Fantasía</option>
           </select>
         </div>
-        <div class="form-group" style="width:110px;">
-          <label class="form-label">Emoji / Icono</label>
-          <input class="modal-input" type="text" id="newMovieEmoji" placeholder="⚔️" maxlength="4" />
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">URL del póster (opcional)</label>
+          <input class="modal-input" type="text" id="newMoviePoster" placeholder="https://..." />
         </div>
       </div>
       <div style="display:flex;gap:12px;">
@@ -2083,48 +1909,104 @@
      CINECKS DATABASE (IndexedDB / LocalStorage Engine)
      ========================================================= */
   const initialMoviesList = [
-    { title:'Avatar: Fuego y Cenizas',  emoji:'🌊', genre:'Sci-Fi',      year:2026, rating:9.1 },
-    { title:'Spider-Man: Nexus',        emoji:'🕷️', genre:'Acción',      year:2026, rating:8.7 },
-    { title:'Dune: Parte 3',            emoji:'🏜️', genre:'Sci-Fi',      year:2026, rating:9.0 },
-    { title:'Oppenheimer 2',            emoji:'💣', genre:'Drama',       year:2026, rating:8.9 },
-    { title:'Señor de los Anillos 4',   emoji:'⚔️', genre:'Fantasía',    year:2026, rating:9.4 },
-    { title:'Terminator 7',             emoji:'🤖', genre:'Acción',      year:2026, rating:7.8 },
-    { title:'Thor: Rebirth',            emoji:'🦸', genre:'Acción',      year:2026, rating:8.2 },
-    { title:'Conjuring: Origen',        emoji:'👻', genre:'Terror',      year:2026, rating:7.5 },
-    { title:'Interstellar 2',           emoji:'🚀', genre:'Sci-Fi',      year:2026, rating:9.2 },
-    { title:'La Sirenita 2',            emoji:'🧜', genre:'Animación',   year:2026, rating:7.9 },
-    { title:'Joker 3',                  emoji:'🃏', genre:'Drama',       year:2026, rating:8.5 },
-    { title:'Matrix 5',                 emoji:'💊', genre:'Sci-Fi',      year:2026, rating:8.0 },
-    { title:'Fast X: Finale',           emoji:'🏎️', genre:'Acción',      year:2026, rating:7.4 },
-    { title:'Inception 2',              emoji:'🌀', genre:'Drama',       year:2026, rating:9.0 },
-    { title:'The Batman 2',             emoji:'🦇', genre:'Acción',      year:2026, rating:8.6 },
-    { title:'Parasite 2',               emoji:'🏚️', genre:'Drama',       year:2026, rating:9.1 },
-    { title:'Alien: Genesis',           emoji:'👾', genre:'Terror',      year:2026, rating:7.7 },
-    { title:'Mortal Kombat 2',          emoji:'🥊', genre:'Acción',      year:2026, rating:7.3 },
-    { title:'Jurassic World 4',         emoji:'🦕', genre:'Aventura',    year:2026, rating:7.6 },
-    { title:'Mission Impossible 9',     emoji:'🕵️', genre:'Acción',      year:2026, rating:8.3 },
-    { title:'Black Panther 3',          emoji:'🐾', genre:'Acción',      year:2026, rating:8.4 },
-    { title:'Doctor Strange 3',         emoji:'✨', genre:'Fantasía',    year:2026, rating:8.1 },
-    { title:'Guardians of the Galaxy 4',emoji:'🌌', genre:'Acción',      year:2026, rating:8.0 },
-    { title:'Deadpool 4',               emoji:'🗡️', genre:'Comedia',     year:2026, rating:8.8 },
-    { title:'Aquaman 3',                emoji:'🌊', genre:'Acción',      year:2026, rating:7.5 },
-    { title:'Flash Gordon',             emoji:'⚡', genre:'Sci-Fi',      year:2026, rating:7.9 },
-    { title:'Star Wars: Episode X',     emoji:'⭐', genre:'Sci-Fi',      year:2026, rating:9.0 },
-    { title:'Indiana Jones 6',          emoji:'🏺', genre:'Aventura',    year:2026, rating:8.2 },
-    { title:'Top Gun 3',                emoji:'✈️', genre:'Acción',      year:2026, rating:8.5 },
-    { title:'Gladiador 3',              emoji:'⚔️', genre:'Drama',       year:2026, rating:8.7 },
-    { title:'El Exorcista: Final',      emoji:'😱', genre:'Terror',      year:2026, rating:7.4 },
-    { title:'La Gran Estafa 4',         emoji:'🎰', genre:'Comedia',     year:2026, rating:7.8 },
-    { title:'Rápidos y Furiosos 12',    emoji:'🏁', genre:'Acción',      year:2026, rating:7.2 },
-    { title:'Planet of the Apes 4',     emoji:'🦍', genre:'Sci-Fi',      year:2026, rating:7.9 },
-    { title:'No Time To Die 2',         emoji:'🔫', genre:'Acción',      year:2026, rating:8.1 },
-    { title:'Nightmare Begins',         emoji:'🌙', genre:'Terror',      year:2026, rating:7.6 },
-    { title:'Encanto 2',                emoji:'🌺', genre:'Animación',   year:2026, rating:8.3 },
-    { title:'Shrek 6',                  emoji:'🧅', genre:'Comedia',     year:2026, rating:8.6 },
-    { title:'Furiosa: Road Rage',       emoji:'🚗', genre:'Acción',      year:2026, rating:8.0 },
-    { title:'The Marvels 2',            emoji:'💫', genre:'Acción',      year:2026, rating:7.8 },
-    { title:'Saw XI',                   emoji:'🩸', genre:'Terror',      year:2026, rating:7.0 },
-    { title:'Wonka 2',                  emoji:'🍫', genre:'Fantasía',    year:2026, rating:8.1 },
+    { title:'Avatar: Fuego y Cenizas', genre:'Sci-Fi', year:2026, rating:9.1 },
+    { title:'Spider-Man: A Través del Spider-Verso', genre:'Acción', year:2026, rating:8.7 },
+    { title:'Duna: Parte Dos', genre:'Sci-Fi', year:2026, rating:9.0 },
+    { title:'Oppenheimer', genre:'Drama', year:2026, rating:8.9 },
+    { title:'El Señor de los Anillos: El Retorno del Rey', genre:'Fantasía', year:2026, rating:9.4 },
+    { title:'Terminator: Destino Oculto', genre:'Acción', year:2026, rating:7.8 },
+    { title:'Thor: Amor y Trueno', genre:'Acción', year:2026, rating:8.2 },
+    { title:'El Conjuro: El Diablo me Obligó a Hacerlo', genre:'Terror', year:2026, rating:7.5 },
+    { title:'Interestelar', genre:'Sci-Fi', year:2026, rating:9.2 },
+    { title:'La Sirenita 2', genre:'Animación', year:2026, rating:7.9 },
+    { title:'Joker 3', genre:'Drama', year:2026, rating:8.5 },
+    { title:'Matrix 5', genre:'Sci-Fi', year:2026, rating:8.0 },
+    { title:'Fast X: Finale', genre:'Acción', year:2026, rating:7.4 },
+    { title:'Inception 2', genre:'Drama', year:2026, rating:9.0 },
+    { title:'The Batman 2', genre:'Acción', year:2026, rating:8.6 },
+    { title:'Parasite 2', genre:'Drama', year:2026, rating:9.1 },
+    { title:'Alien: Genesis', genre:'Terror', year:2026, rating:7.7 },
+    { title:'Mortal Kombat 2', genre:'Acción', year:2026, rating:7.3 },
+    { title:'Jurassic World 4', genre:'Aventura', year:2026, rating:7.6 },
+    { title:'Mission Impossible 9', genre:'Acción', year:2026, rating:8.3 },
+    { title:'Black Panther 3', genre:'Acción', year:2026, rating:8.4 },
+    { title:'Doctor Strange 3', genre:'Fantasía', year:2026, rating:8.1 },
+    { title:'Guardians of the Galaxy 4', genre:'Acción', year:2026, rating:8.0 },
+    { title:'Deadpool 4', genre:'Comedia', year:2026, rating:8.8 },
+    { title:'Aquaman 3', genre:'Acción', year:2026, rating:7.5 },
+    { title:'Flash Gordon', genre:'Sci-Fi', year:2026, rating:7.9 },
+    { title:'Star Wars: Episode X', genre:'Sci-Fi', year:2026, rating:9.0 },
+    { title:'Indiana Jones 6', genre:'Aventura', year:2026, rating:8.2 },
+    { title:'Top Gun 3', genre:'Acción', year:2026, rating:8.5 },
+    { title:'Gladiador 3', genre:'Drama', year:2026, rating:8.7 },
+    { title:'El Exorcista: Final', genre:'Terror', year:2026, rating:7.4 },
+    { title:'La Gran Estafa 4', genre:'Comedia', year:2026, rating:7.8 },
+    { title:'Rápidos y Furiosos 12', genre:'Acción', year:2026, rating:7.2 },
+    { title:'Planet of the Apes 4', genre:'Sci-Fi', year:2026, rating:7.9 },
+    { title:'No Time To Die 2', genre:'Acción', year:2026, rating:8.1 },
+    { title:'Nightmare Begins', genre:'Terror', year:2026, rating:7.6 },
+    { title:'Encanto 2', genre:'Animación', year:2026, rating:8.3 },
+    { title:'Shrek 6', genre:'Comedia', year:2026, rating:8.6 },
+    { title:'Furiosa: Road Rage', genre:'Acción', year:2026, rating:8.0 },
+    { title:'The Marvels 2', genre:'Acción', year:2026, rating:7.8 },
+    { title:'Saw XI', genre:'Terror', year:2026, rating:7.0 },
+    { title:'Wonka 2', genre:'Fantasía', year:2026, rating:8.1 }
+  ];
+
+  const initialMoviesByTitle = Object.fromEntries(initialMoviesList.map(movie => [movie.title, movie]));
+
+  const catalogPosters = {
+    'Avatar: Fuego y Cenizas': 'https://image.tmdb.org/t/p/w500/bRBeSHfGHwkEpImlhxPmOcUsaeg.jpg',
+    'Spider-Man: A Través del Spider-Verso': 'https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg',
+    'Duna: Parte Dos': 'https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg',
+    'Oppenheimer': 'https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',
+    'El Señor de los Anillos: El Retorno del Rey': 'https://image.tmdb.org/t/p/w500/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg',
+    'Terminator: Destino Oculto': 'https://image.tmdb.org/t/p/w500/vqzNJRH4YyquRiWxCCOH0aXggHI.jpg',
+    'Interestelar': 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
+    'Thor: Amor y Trueno': 'https://image.tmdb.org/t/p/w500/bQXAqRx2Fgc46uCVWgoPz5L5Dtr.jpg',
+    'El Conjuro: El Diablo me Obligó a Hacerlo': 'https://image.tmdb.org/t/p/w500/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg'
+  };
+
+  const legacyMovieTitles = {
+    'Spider-Man: Nexus': 'Spider-Man: A Través del Spider-Verso',
+    'Dune: Parte 3': 'Duna: Parte Dos',
+    'Oppenheimer 2': 'Oppenheimer',
+    'Señor de los Anillos 4': 'El Señor de los Anillos: El Retorno del Rey',
+    'Terminator 7': 'Terminator: Destino Oculto',
+    'Interstellar 2': 'Interestelar',
+    'Thor: Rebirth': 'Thor: Amor y Trueno',
+    'Conjuring: Origen': 'El Conjuro: El Diablo me Obligó a Hacerlo',
+    'shazam': 'Thor: Amor y Trueno',
+    'duna': 'El Conjuro: El Diablo me Obligó a Hacerlo'
+  };
+
+  const outdatedMoviePosters = {
+    'Avatar: Fuego y Cenizas': 'https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg',
+    'Terminator: Destino Oculto': 'https://image.tmdb.org/t/p/w500/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg'
+  };
+
+  const homeShowtimes = [
+    { movie:initialMoviesByTitle['Avatar: Fuego y Cenizas'], time:'14:30', room:'Sala 1', sala:'Sala 1 — IMAX 3D', badge:'3D IMAX' },
+    { movie:initialMoviesByTitle['El Señor de los Anillos: El Retorno del Rey'], time:'16:00', room:'Sala 2', sala:'Sala 2 — Premium', badge:'Premium' },
+    { movie:initialMoviesByTitle['Duna: Parte Dos'], time:'18:45', room:'Sala 3', sala:'Sala 3 — 4DX', badge:'4DX' },
+    { movie:initialMoviesByTitle['Spider-Man: A Través del Spider-Verso'], time:'20:15', room:'Sala 4', sala:'Sala 4 — 2D', badge:'2D' },
+    { movie:initialMoviesByTitle.Oppenheimer, time:'21:30', room:'Sala 5', sala:'Sala 5 — IMAX', badge:'IMAX' },
+    { movie:initialMoviesByTitle.Interestelar, time:'23:00', room:'Sala 1', sala:'Sala 1 — IMAX', badge:'IMAX' }
+  ];
+
+  const homePopularMovies = [
+    { movie:initialMoviesByTitle['Avatar: Fuego y Cenizas'], genre:'Ciencia Ficción · IMAX', rating:'9.1', room:'Sala 1 IMAX' },
+    { movie:initialMoviesByTitle['Spider-Man: A Través del Spider-Verso'], genre:'Acción · Superhéroes', rating:'8.7', room:'Sala 4' },
+    { movie:initialMoviesByTitle['Duna: Parte Dos'], genre:'Ciencia Ficción · 4DX', rating:'9.0', room:'Sala 3' },
+    { movie:initialMoviesByTitle.Oppenheimer, genre:'Drama Histórico', rating:'8.9', room:'Sala 5' },
+    { movie:initialMoviesByTitle.Interestelar, genre:'Ciencia Ficción · IMAX', rating:'9.2', room:'Sala 1' }
+  ];
+
+  const homeUpcomingMovies = [
+    { movie:initialMoviesByTitle['El Señor de los Anillos: El Retorno del Rey'], genre:'Fantasía Épica' },
+    { movie:initialMoviesByTitle['Terminator: Destino Oculto'], genre:'Acción · Sci-Fi' },
+    { movie:initialMoviesByTitle['Thor: Amor y Trueno'], genre:'Superhéroes' },
+    { movie:initialMoviesByTitle['El Conjuro: El Diablo me Obligó a Hacerlo'], genre:'Terror' }
   ];
 
   const CinecksDB = {
@@ -2272,7 +2154,22 @@
 
     // MOVIES
     getMovies() {
-      try { return JSON.parse(localStorage.getItem(this.KEYS.MOVIES)) || []; }
+      try {
+        const movies = JSON.parse(localStorage.getItem(this.KEYS.MOVIES)) || [];
+        let changed = false;
+        const updatedMovies = movies.map(movie => {
+          const title = legacyMovieTitles[movie.title] || movie.title;
+          const poster = movie.poster && movie.poster !== outdatedMoviePosters[title]
+            ? movie.poster
+            : catalogPosters[title];
+          const updatedMovie = { ...movie, title, poster };
+          if('emoji' in updatedMovie || title !== movie.title || poster !== movie.poster) changed = true;
+          delete updatedMovie.emoji;
+          return updatedMovie;
+        });
+        if(changed) localStorage.setItem(this.KEYS.MOVIES, JSON.stringify(updatedMovies));
+        return updatedMovies;
+      }
       catch(e) { return []; }
     },
     addMovie(movie) {
@@ -2489,6 +2386,7 @@
   let currentGenreFilter = 'Todos';
   let currentSearchQuery = '';
   let editBalanceTargetEmail = '';
+  let selectedCinemaSala = '';
 
   const MOVIES_PER_PAGE = 6;
 
@@ -2496,9 +2394,14 @@
      PAGE NAVIGATION
      ========================================================= */
   function showPage(id) {
+       const target = document.getElementById('page-' + id);
+       if(!target) {
+         showNotification(`No se encontró la página "${id}"`, 'error');
+         return;
+       }
+
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const target = document.getElementById('page-' + id);
-    if(target) target.classList.add('active');
+       target.classList.add('active');
     window.scrollTo({ top:0, behavior:'smooth' });
 
     if(id === 'catalog') renderCatalog(1);
@@ -2562,6 +2465,68 @@
     }
   }
 
+  function renderPoster(movie, className) {
+    const poster = getPosterURL(movie);
+    const fallback = `<div class="poster-fallback" ${poster ? 'hidden' : ''} aria-label="Póster de ${movie.title}"><span class="poster-fallback-title">${movie.title}</span></div>`;
+    return poster
+      ? `<img class="${className}" src="${poster}" alt="Póster de ${movie.title}" onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />${fallback}`
+      : fallback;
+  }
+
+  function getPosterURL(movie) {
+    return movie.poster || catalogPosters[movie.title] || '';
+  }
+
+  function renderHomeContent() {
+    const showtimes = document.getElementById('todayShowtimes');
+    const popular = document.getElementById('mostWatchedRow');
+    const upcoming = document.getElementById('upcomingMovies');
+
+    if(showtimes) {
+      showtimes.innerHTML = homeShowtimes.map((show, i) => `
+        <div class="funcion-card reveal delay-${Math.min(i + 1, 5)}" onclick="startBooking('${show.movie.title}','${show.room}')">
+          <div class="funcion-time">${show.time}</div>
+          <div class="funcion-movie">${show.movie.title}</div>
+          <div class="funcion-sala">${show.sala}</div>
+          <div class="funcion-badge">${show.badge}</div>
+        </div>
+      `).join('');
+    }
+
+    if(popular) {
+      popular.innerHTML = homePopularMovies.map((item, i) => {
+        const title = item.movie.title.replace(/'/g, "\\'");
+        return `
+          <div class="movie-card reveal delay-${i + 1}" onclick="startBooking('${title}','${item.room}')">
+            <div class="rank-badge">#${i + 1}</div>
+            ${renderPoster(item.movie, 'movie-poster')}
+            <div class="movie-overlay">
+              <button class="overlay-btn" onclick="event.stopPropagation();startBooking('${title}','${item.room}')">🎟️ Comprar Entrada</button>
+            </div>
+            <div class="movie-card-body">
+              <div class="movie-card-title">${item.movie.title}</div>
+              <div class="movie-card-genre">${item.genre}</div>
+              <div class="movie-card-rating"><span class="star-icon">★</span> ${item.rating} · ${item.movie.year}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    if(upcoming) {
+      upcoming.innerHTML = homeUpcomingMovies.map((item, i) => `
+        <div class="upcoming-card reveal delay-${i + 1}">
+          <span class="upcoming-label">PRONTO</span>
+          ${renderPoster(item.movie, 'upcoming-poster')}
+          <div class="upcoming-body">
+            <div class="upcoming-title">${item.movie.title}</div>
+            <div class="upcoming-genre">${item.genre}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
   /* =========================================================
      CATALOG (Powered by CinecksDB)
      ========================================================= */
@@ -2607,17 +2572,22 @@
       return;
     }
 
-    grid.innerHTML = movies.map(m => `
-      <div class="catalog-card" onclick="startBooking('${m.title.replace(/'/g,"\\'")}','Sala 1')">
-        <div class="catalog-poster">${m.emoji || '🎬'}</div>
-        <div class="catalog-info">
-          <div class="catalog-title">${m.title}</div>
-          <div class="catalog-meta">${m.year || 2026} &bull; ★ ${m.rating || 8.0}</div>
-          <div class="catalog-genre">${m.genre}</div>
-          <button class="catalog-btn" onclick="event.stopPropagation();startBooking('${m.title.replace(/'/g,"\\'")}','Sala 1')">🎟️ Comprar Entrada</button>
+    grid.innerHTML = movies.map(m => {
+      const safeTitle = m.title.replace(/'/g, "\\'");
+      return `
+        <div class="catalog-card" onclick="startBooking('${safeTitle}','Sala 1')">
+          <div class="catalog-poster-wrap">
+            ${renderPoster(m, 'catalog-poster')}
+          </div>
+          <div class="catalog-info">
+            <div class="catalog-title">${m.title}</div>
+            <div class="catalog-meta">${m.year || 2026} &bull; ★ ${m.rating || 8.0}</div>
+            <div class="catalog-genre">${m.genre}</div>
+            <button class="catalog-btn" onclick="event.stopPropagation();startBooking('${safeTitle}','Sala 1')">🎟️ Comprar Entrada</button>
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     pag.innerHTML = '';
     for(let i = 1; i <= totalPages; i++) {
@@ -2640,7 +2610,7 @@
     layout.innerHTML = '';
     selectedSeats = [];
 
-    const takenSeats = CinecksDB.getOccupiedSeats(selectedMovie, selectedSala);
+    const takenSeats = new Set(CinecksDB.getOccupiedSeats(selectedMovie, selectedSala));
 
     rows.forEach((row, ri) => {
       const rowDiv = document.createElement('div');
@@ -2655,11 +2625,12 @@
       for(let c = 1; c <= 10; c++) {
         const id = row + c;
         const seat = document.createElement('div');
-        seat.className = 'seat ' + (takenSeats.includes(id) ? 'taken' : 'available');
+        const isTaken = takenSeats.has(id);
+        seat.className = 'seat ' + (isTaken ? 'taken' : 'available');
         seat.dataset.id = id;
         seat.textContent = c;
         seat.style.transitionDelay = (c * 0.03) + 's';
-        if(!takenSeats.includes(id)) {
+        if(!isTaken) {
           seat.onclick = () => toggleSeat(seat, id);
         } else {
           seat.title = 'Asiento ya ocupado en la base de datos';
@@ -2700,9 +2671,19 @@
   /* =========================================================
      BOOKING & PURCHASE FLOW
      ========================================================= */
+  function selectCinema(cinemaSala) {
+    selectedCinemaSala = cinemaSala;
+    const subtitle = document.getElementById('catalogSubtitle');
+    if(subtitle) subtitle.textContent = `Sucursal: ${cinemaSala}. Elegí una película para continuar.`;
+    showPage('catalog');
+  }
+
   function startBooking(movie, sala) {
     selectedMovie = movie;
-    selectedSala  = sala || 'Sala 1';
+    selectedSala  = selectedCinemaSala || sala || 'Sala 1';
+    selectedCinemaSala = '';
+    const subtitle = document.getElementById('catalogSubtitle');
+    if(subtitle) subtitle.textContent = 'Explorá todas nuestras películas disponibles — Filtros y búsqueda en tiempo real';
     const label = document.getElementById('seatsMovieLabel');
     if(label) label.textContent = `${movie} · ${selectedSala}`;
     showPage('seats');
@@ -3037,18 +3018,21 @@
     }).join('');
 
     const moviesBody = document.getElementById('adminMoviesTableBody');
-    moviesBody.innerHTML = movies.map(m => `
-      <tr>
-        <td style="font-size:1.6rem;">${m.emoji || '🎬'}</td>
-        <td><strong style="color:#fff;">${m.title}</strong></td>
-        <td><span class="db-badge-role db-badge-user">${m.genre}</span></td>
-        <td>${m.year || 2026}</td>
-        <td>★ ${m.rating || 8.0}</td>
-        <td>
-          <button class="nav-btn" onclick="adminDeleteMovie('${m.title.replace(/'/g,"\\'")}')" style="padding:4px 8px;font-size:0.75rem;color:#ff6666;border-color:#ff444455;">🗑️ Eliminar</button>
-        </td>
-      </tr>
-    `).join('');
+    moviesBody.innerHTML = movies.map(m => {
+      const poster = getPosterURL(m);
+      return `
+        <tr>
+          <td>${poster ? `<img class="admin-movie-poster" src="${poster}" alt="Póster de ${m.title}" />` : '—'}</td>
+          <td><strong style="color:#fff;">${m.title}</strong></td>
+          <td><span class="db-badge-role db-badge-user">${m.genre}</span></td>
+          <td>${m.year || 2026}</td>
+          <td>★ ${m.rating || 8.0}</td>
+          <td>
+            <button class="nav-btn" onclick="adminDeleteMovie('${m.title.replace(/'/g,"\\'")}')" style="padding:4px 8px;font-size:0.75rem;color:#ff6666;border-color:#ff444455;">🗑️ Eliminar</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
 
     const movieSelect = document.getElementById('adminSeatMovieSelect');
     if(movieSelect) {
@@ -3132,7 +3116,7 @@
   // Admin New Movie
   function openNewMovieModal() {
     document.getElementById('newMovieTitle').value = '';
-    document.getElementById('newMovieEmoji').value = '🎬';
+    document.getElementById('newMoviePoster').value = '';
     document.getElementById('newMovieModal').classList.add('open');
   }
   function closeNewMovieModal() {
@@ -3141,13 +3125,24 @@
   function submitNewMovie() {
     const title = document.getElementById('newMovieTitle').value.trim();
     const genre = document.getElementById('newMovieGenre').value;
-    const emoji = document.getElementById('newMovieEmoji').value.trim() || '🎬';
+    const posterInput = document.getElementById('newMoviePoster').value.trim();
     const year  = parseInt(document.getElementById('newMovieYear').value) || 2026;
     const rating= parseFloat(document.getElementById('newMovieRating').value) || 8.0;
 
     if(!title) { showNotification('⚠️ Ingresá el título de la película', 'error'); return; }
+    let poster = '';
+    if(posterInput) {
+      let parsedPoster;
+      try { parsedPoster = new URL(posterInput); }
+      catch(e) { showNotification('⚠️ La URL del póster no es válida', 'error'); return; }
+      if(!['http:', 'https:'].includes(parsedPoster.protocol)) {
+        showNotification('⚠️ El póster debe usar una URL HTTP o HTTPS', 'error');
+        return;
+      }
+      poster = parsedPoster.href;
+    }
 
-    CinecksDB.addMovie({ title, emoji, genre, year, rating });
+    CinecksDB.addMovie({ title, poster, genre, year, rating });
     closeNewMovieModal();
     showNotification(`🎬 Película "${title}" agregada a la base de datos`, 'success');
     renderAdminDashboard();
@@ -3445,6 +3440,7 @@
   }
 
   createHeroStars();
+  renderHomeContent();
   animateCounters();
   updateNavUser();
   updateTicketsBadge();
